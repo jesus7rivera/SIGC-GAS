@@ -12,9 +12,6 @@ function ModalMovimiento({ onClose, onGuardar }) {
   const [observacion, setObservacion] = useState("");
 
   useEffect(() => {
-    cargarDatos();
-  }, []);
-
   const cargarDatos = async () => {
     try {
       const clientesDB = await obtenerClientes();
@@ -26,6 +23,9 @@ function ModalMovimiento({ onClose, onGuardar }) {
       console.error("Error al cargar datos:", error);
     }
   };
+
+  cargarDatos();
+}, []);
 
   const manejarGuardar = (e) => {
     e.preventDefault();
