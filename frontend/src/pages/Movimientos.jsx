@@ -12,9 +12,6 @@ function Movimientos() {
   const [movimientos, setMovimientos] = useState([]);
 
   useEffect(() => {
-    cargarMovimientos();
-  }, []);
-
   const cargarMovimientos = async () => {
     try {
       const data = await obtenerMovimientos();
@@ -24,6 +21,8 @@ function Movimientos() {
     }
   };
 
+  cargarMovimientos();
+}, []);
   const guardarMovimiento = async (nuevoMovimiento) => {
     try {
       const movimientoGuardado = await crearMovimiento(nuevoMovimiento);

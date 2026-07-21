@@ -17,9 +17,6 @@ function Cilindros() {
   const [historial, setHistorial] = useState([]);
 
   useEffect(() => {
-    cargarCilindros();
-  }, []);
-
   const cargarCilindros = async () => {
     try {
       const data = await obtenerCilindros();
@@ -28,6 +25,9 @@ function Cilindros() {
       console.error("Error al cargar cilindros:", error);
     }
   };
+
+  cargarCilindros();
+}, []);
 
   const manejarGuardar = async (cilindro) => {
   try {

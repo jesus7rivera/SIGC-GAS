@@ -21,9 +21,6 @@ function Dashboard() {
   const [movimientos, setMovimientos] = useState([]);
 
   useEffect(() => {
-    cargarDashboard();
-  }, []);
-
   const cargarDashboard = async () => {
     try {
       const data = await obtenerDatosDashboard();
@@ -34,6 +31,9 @@ function Dashboard() {
       console.error("Error al cargar dashboard:", error);
     }
   };
+
+  cargarDashboard();
+}, []);
 
   return (
     <div>

@@ -16,9 +16,6 @@ function Clientes() {
   const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
-    cargarClientes();
-  }, []);
-
   const cargarClientes = async () => {
     try {
       const data = await obtenerClientes();
@@ -27,6 +24,9 @@ function Clientes() {
       console.error("Error al cargar clientes:", error);
     }
   };
+
+  cargarClientes();
+}, []);
 
   const agregarCliente = async (cliente) => {
   try {
