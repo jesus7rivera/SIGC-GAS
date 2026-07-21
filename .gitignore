@@ -1,0 +1,34 @@
+﻿# Dependencias de Node.js
+node_modules/
+**/node_modules/
+
+# Variables de entorno y credenciales
+.env
+.env.*
+!.env.example
+
+# Archivos generados al compilar
+dist/
+build/
+coverage/
+
+# Registros de errores
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Archivos de Windows
+Thumbs.db
+Desktop.ini
+
+# Archivos temporales de Visual Studio Code
+.vscode/
+
+# Python y Rasa
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+chatbot/models/
+chatbot/.rasa/

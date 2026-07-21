@@ -1,0 +1,116 @@
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  background: var(--sidebar);
+  color: white;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.brand-icon {
+  width: 45px;
+  height: 45px;
+  background: var(--primary);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+
+.brand h2 {
+  font-size: 20px;
+}
+
+.brand span {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.user-info {
+  padding: 18px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 16px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.user-avatar {
+  width: 55px;
+  height: 55px;
+  margin: 0 auto 10px;
+  background: rgba(37, 99, 235, 0.25);
+  color: #93c5fd;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+}
+
+.user-info h3 {
+  font-size: 15px;
+  margin-bottom: 5px;
+}
+
+.user-info p {
+  font-size: 13px;
+  color: #cbd5e1;
+}
+
+.menu {
+  list-style: none;
+  flex: 1;
+}
+
+.menu li {
+  margin-bottom: 10px;
+}
+
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #cbd5e1;
+  padding: 13px 14px;
+  border-radius: 12px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.menu a:hover {
+  background: var(--sidebar-hover);
+  color: white;
+}
+
+.menu a.active {
+  background: var(--primary);
+  color: white;
+}
+
+.logout-button {
+  border: none;
+  background: rgba(220, 38, 38, 0.15);
+  color: #fecaca;
+  padding: 13px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.logout-button:hover {
+  background: var(--danger);
+  color: white;
+}
