@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   frontend:
-    name: Compilar frontend
+    name: Analizar y compilar frontend
     runs-on: ubuntu-latest
 
     defaults:
@@ -40,3 +40,28 @@ jobs:
 
       - name: Compilar frontend
         run: npm run build
+
+  backend:
+    name: Analizar backend
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Analizar calidad del código
+        run: npm run lint
