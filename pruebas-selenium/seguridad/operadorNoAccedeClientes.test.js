@@ -23,7 +23,7 @@ async function operadorNoAccedeClientes() {
         // Verifica que el menú Clientes NO exista
 
         const menuClientes = await driver.findElements(
-            By.xpath("//*[contains(text(),'Clientes')]")
+            By.css('a[href="/clientes"]')
         );
 
         if (menuClientes.length > 0) {
@@ -59,6 +59,8 @@ async function operadorNoAccedeClientes() {
         console.log("");
         console.log("RESULTADO: FAIL");
         console.log(error.message);
+
+        process.exitCode = 1;
 
     } finally {
 

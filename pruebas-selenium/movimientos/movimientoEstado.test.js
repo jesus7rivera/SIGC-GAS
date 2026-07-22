@@ -81,7 +81,11 @@ async function movimientoEstadoTest() {
 
     let selects = await driver.findElements(By.css(".modal select"));
 
-    await seleccionarPrimeraOpcionValida(selects[0]);
+    await seleccionarPorTexto(
+      driver,
+      selects[0],
+      "Cliente Selenium"
+    );
     await seleccionarPorTexto(driver, selects[1], codigo);
     await seleccionarPorTexto(driver, selects[2], "Salida");
 
@@ -122,7 +126,11 @@ async function movimientoEstadoTest() {
 
     selects = await driver.findElements(By.css(".modal select"));
 
-    await seleccionarPorTexto(driver, selects[0], "Administrador");
+    await seleccionarPorTexto(
+      driver,
+      selects[0],
+      "Cliente Selenium"
+    );
     await seleccionarPorTexto(driver, selects[1], codigo);
     await seleccionarPorTexto(driver, selects[2], "Devolución");
 
@@ -158,6 +166,8 @@ async function movimientoEstadoTest() {
     console.log("");
     console.log("RESULTADO: FAIL");
     console.log(error.message);
+
+    process.exitCode = 1;
   } finally {
     await driver.sleep(2000);
     await driver.quit();

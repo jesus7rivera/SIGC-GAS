@@ -44,6 +44,8 @@ async function pruebaISO25010() {
   } catch (error) {
     console.log("FAIL - El cilindro no fue registrado correctamente");
     console.log(error.message);
+
+    process.exitCode = 1;
   } finally {
     await driver.sleep(3000);
     await driver.quit();

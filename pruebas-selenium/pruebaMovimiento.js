@@ -88,11 +88,15 @@ async function pruebaMovimientoISO25010() {
       console.log("El movimiento Salida actualizó el cilindro a Prestado.");
     } else {
       console.log("FAIL - El estado del cilindro no cambió correctamente.");
+
+      process.exitCode = 1;
     }
 
   } catch (error) {
     console.log("FAIL - Error durante la prueba de movimiento");
     console.log(error.message);
+
+    process.exitCode = 1;
   } finally {
     await driver.sleep(3000);
     await driver.quit();
