@@ -42,6 +42,8 @@ async function loginIncorrectoTest() {
   } catch (error) {
     console.log("FAIL - Error en login incorrecto");
     console.log(error.message);
+
+    process.exitCode = 1;
   } finally {
     await driver.sleep(2000);
     await driver.quit();

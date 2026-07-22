@@ -28,6 +28,8 @@ async function loginCorrectoTest() {
   } catch (error) {
     console.log("FAIL - Error en login correcto");
     console.log(error.message);
+
+    process.exitCode = 1;
   } finally {
     await driver.sleep(2000);
     await driver.quit();
