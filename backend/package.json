@@ -8,7 +8,8 @@
     "start": "node src/server.js",
     "dev": "nodemon --watch src src/server.js",
     "lint": "eslint src",
-    "seed:test": "node src/scripts/seedTestData.js"
+    "seed:test": "node src/scripts/seedTestData.js",
+    "test:security-api": "node src/scripts/securityApiTests.js"
   },
   "keywords": [],
   "author": "",
