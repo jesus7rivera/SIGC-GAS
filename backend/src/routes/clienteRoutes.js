@@ -4,14 +4,42 @@ import {
   obtenerClientes,
   crearCliente,
   eliminarCliente,
-  actualizarCliente
+  actualizarCliente,
 } from "../controllers/clienteController.js";
+
+import {
+  autenticar,
+  autorizarRoles,
+} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", obtenerClientes);
-router.post("/", crearCliente);
-router.put("/:id", actualizarCliente);
-router.delete("/:id", eliminarCliente);
+router.get(
+  "/",
+  autenticar,
+  autorizarRoles("Administrador", "Operador"),
+  obtenerClientes,
+);
+
+router.post(
+  "/",
+  autenticar,
+  autorizarRoles("Administrador"),
+  crearCliente,
+);
+
+router.put(
+  "/:id",
+  autenticar,
+  autorizarRoles("Administrador"),
+  actualizarCliente,
+);
+
+router.delete(
+  "/:id",
+  autenticar,
+  autorizarRoles("Administrador"),
+  eliminarCliente,
+);
 
 export default router;

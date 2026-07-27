@@ -4,13 +4,42 @@ import {
   obtenerCilindros,
   crearCilindro,
   eliminarCilindro,
-  actualizarCilindro
+  actualizarCilindro,
 } from "../controllers/cilindroController.js";
+
+import {
+  autenticar,
+  autorizarRoles,
+} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", obtenerCilindros);
-router.post("/", crearCilindro);
-router.put("/:id", actualizarCilindro);
-router.delete("/:id", eliminarCilindro);
+router.get(
+  "/",
+  autenticar,
+  autorizarRoles("Administrador", "Operador"),
+  obtenerCilindros,
+);
+
+router.post(
+  "/",
+  autenticar,
+  autorizarRoles("Administrador", "Operador"),
+  crearCilindro,
+);
+
+router.put(
+  "/:id",
+  autenticar,
+  autorizarRoles("Administrador", "Operador"),
+  actualizarCilindro,
+);
+
+router.delete(
+  "/:id",
+  autenticar,
+  autorizarRoles("Administrador", "Operador"),
+  eliminarCilindro,
+);
+
 export default router;

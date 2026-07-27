@@ -61,12 +61,22 @@ export const login = async (req, res) => {
       });
     }
 
+    const jwtSecret = process.env.JWT_SECRET;
+
+if (!jwtSecret) {
+  console.error("JWT_SECRET no está definida.");
+
+  return res.status(500).json({
+    mensaje: "Error de configuración del servidor",
+  });
+}
+
     const token = jwt.sign(
       {
         id: usuario._id,
         rol: usuario.rol
       },
-      "SIGC-GAS-2026",
+      jwtSecret,
       {
         expiresIn: "8h"
       }

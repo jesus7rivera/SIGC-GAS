@@ -1,23 +1,28 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/cilindros";
+import api from "./api";
 
 export const obtenerCilindros = async () => {
-  const response = await axios.get(API_URL);
+  const response = await api.get("/cilindros");
   return response.data;
 };
 
 export const crearCilindro = async (cilindro) => {
-  const response = await axios.post(API_URL, cilindro);
+  const response = await api.post("/cilindros", cilindro);
   return response.data;
 };
 
 export const eliminarCilindro = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`);
+  const response = await api.delete(`/cilindros/${id}`);
   return response.data;
 };
 
-export const actualizarCilindro = async (id, cilindro) => {
-  const response = await axios.put(`${API_URL}/${id}`, cilindro);
+export const actualizarCilindro = async (
+  id,
+  cilindro,
+) => {
+  const response = await api.put(
+    `/cilindros/${id}`,
+    cilindro,
+  );
+
   return response.data;
 };

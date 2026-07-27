@@ -1,9 +1,8 @@
 import express from "express";
 
 import {
-  registrarUsuario,
-  login,
-} from "../controllers/authController.js";
+  obtenerDashboard,
+} from "../controllers/dashboardController.js";
 
 import {
   autenticar,
@@ -12,13 +11,11 @@ import {
 
 const router = express.Router();
 
-router.post("/login", login);
-
-router.post(
-  "/registrar",
+router.get(
+  "/",
   autenticar,
-  autorizarRoles("Administrador"),
-  registrarUsuario,
+  autorizarRoles("Administrador", "Operador"),
+  obtenerDashboard,
 );
 
 export default router;
