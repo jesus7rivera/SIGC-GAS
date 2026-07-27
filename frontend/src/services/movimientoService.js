@@ -1,18 +1,25 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/movimientos";
+import api from "./api";
 
 export const obtenerMovimientos = async () => {
-  const response = await axios.get(API_URL);
+  const response = await api.get("/movimientos");
   return response.data;
 };
 
 export const crearMovimiento = async (movimiento) => {
-  const response = await axios.post(API_URL, movimiento);
+  const response = await api.post(
+    "/movimientos",
+    movimiento,
+  );
+
   return response.data;
 };
 
-export const obtenerHistorialPorCilindro = async (cilindroId) => {
-  const response = await axios.get(`${API_URL}/cilindro/${cilindroId}`);
+export const obtenerHistorialPorCilindro = async (
+  cilindroId,
+) => {
+  const response = await api.get(
+    `/movimientos/cilindro/${cilindroId}`,
+  );
+
   return response.data;
 };

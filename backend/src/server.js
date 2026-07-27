@@ -6,12 +6,14 @@ import clienteRoutes from "./routes/clienteRoutes.js";
 import cilindroRoutes from "./routes/cilindroRoutes.js";
 import movimientoRoutes from "./routes/movimientoRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import dashboardRoutes from "./routes/dashboardRoutes.js";
 
 dotenv.config();
 conectarDB();
 
 const app = express();
 
+app.use("/api/dashboard", dashboardRoutes);
 app.use(cors());
 app.use(express.json());
 app.use("/api/clientes", clienteRoutes);

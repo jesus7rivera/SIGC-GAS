@@ -88,6 +88,7 @@ jobs:
     env:
       NODE_ENV: test
       MONGO_URI: mongodb://127.0.0.1:27017/sigc_gas_test
+      JWT_SECRET: "sigc-gas-ci-test-secret-2026"
       PORT: "5000"
       CI: "true"
 

@@ -1,22 +1,21 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/api/clientes";
+import api from "./api";
 
 export const obtenerClientes = async () => {
-  const response = await axios.get(API_URL);
+  const response = await api.get("/clientes");
   return response.data;
 };
 
 export const crearCliente = async (cliente) => {
-  const response = await axios.post(API_URL, cliente);
+  const response = await api.post("/clientes", cliente);
   return response.data;
 };
+
 export const eliminarCliente = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`);
+  const response = await api.delete(`/clientes/${id}`);
   return response.data;
 };
 
 export const actualizarCliente = async (id, cliente) => {
-  const response = await axios.put(`${API_URL}/${id}`, cliente);
+  const response = await api.put(`/clientes/${id}`, cliente);
   return response.data;
 };
