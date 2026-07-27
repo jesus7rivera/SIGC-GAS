@@ -146,6 +146,8 @@ jobs:
 
             sleep 2
           done
+          echo "Ejecutando pruebas de seguridad de la API."
+          npm --prefix backend run test:security-api
 
           for intento in {1..30}; do
             if curl --fail --silent http://127.0.0.1:5173/ > /dev/null; then
