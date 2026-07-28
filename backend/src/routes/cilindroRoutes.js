@@ -12,6 +12,11 @@ import {
   autorizarRoles,
 } from "../middleware/authMiddleware.js";
 
+import {
+  validarCilindro,
+  validarParametroObjectId,
+} from "../middleware/validationMiddleware.js";
+
 const router = express.Router();
 
 router.get(
@@ -25,6 +30,7 @@ router.post(
   "/",
   autenticar,
   autorizarRoles("Administrador", "Operador"),
+  validarCilindro,
   crearCilindro,
 );
 
@@ -32,6 +38,8 @@ router.put(
   "/:id",
   autenticar,
   autorizarRoles("Administrador", "Operador"),
+  validarParametroObjectId("id"),
+  validarCilindro,
   actualizarCilindro,
 );
 
@@ -39,6 +47,7 @@ router.delete(
   "/:id",
   autenticar,
   autorizarRoles("Administrador", "Operador"),
+  validarParametroObjectId("id"),
   eliminarCilindro,
 );
 

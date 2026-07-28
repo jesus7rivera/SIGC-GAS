@@ -10,14 +10,20 @@ import {
   autorizarRoles,
 } from "../middleware/authMiddleware.js";
 
+import {
+  validarLogin,
+  validarUsuario,
+} from "../middleware/validationMiddleware.js";
+
 const router = express.Router();
 
-router.post("/login", login);
+router.post("/login", validarLogin, login);
 
 router.post(
   "/registrar",
   autenticar,
   autorizarRoles("Administrador"),
+  validarUsuario,
   registrarUsuario,
 );
 

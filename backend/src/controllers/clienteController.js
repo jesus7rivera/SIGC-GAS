@@ -1,77 +1,91 @@
 import Cliente from "../models/Cliente.js";
 
-export const obtenerClientes = async (req, res) => {
+export const obtenerClientes = async (
+  req,
+  res,
+  next,
+) => {
   try {
-    const clientes = await Cliente.find().sort({ createdAt: -1 });
-    res.json(clientes);
-  } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener clientes",
-      error: error.message
+    const clientes = await Cliente.find().sort({
+      createdAt: -1,
     });
+
+    return res.json(clientes);
+  } catch (error) {
+    return next(error);
   }
 };
 
-export const crearCliente = async (req, res) => {
+export const crearCliente = async (
+  req,
+  res,
+  next,
+) => {
   try {
-    const nuevoCliente = new Cliente(req.body);
-    const clienteGuardado = await nuevoCliente.save();
+    const clienteGuardado = await Cliente.create(
+      req.body,
+    );
 
-    res.status(201).json(clienteGuardado);
+    return res.status(201).json(
+      clienteGuardado,
+    );
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear cliente",
-      error: error.message
-    });
+    return next(error);
   }
 };
-export const eliminarCliente = async (req, res) => {
+
+export const eliminarCliente = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const { id } = req.params;
 
-    const clienteEliminado = await Cliente.findByIdAndDelete(id);
+    const clienteEliminado =
+      await Cliente.findByIdAndDelete(id);
 
     if (!clienteEliminado) {
       return res.status(404).json({
-        mensaje: "Cliente no encontrado"
+        mensaje: "Cliente no encontrado.",
       });
     }
 
-    res.json({
-      mensaje: "Cliente eliminado correctamente",
-      cliente: clienteEliminado
+    return res.json({
+      mensaje: "Cliente eliminado correctamente.",
+      cliente: clienteEliminado,
     });
-
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar cliente",
-      error: error.message
-    });
+    return next(error);
   }
 };
 
-export const actualizarCliente = async (req, res) => {
+export const actualizarCliente = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const { id } = req.params;
 
-    const clienteActualizado = await Cliente.findByIdAndUpdate(
-      id,
-      req.body,
-      { new: true }
-    );
+    const clienteActualizado =
+      await Cliente.findByIdAndUpdate(
+        id,
+        req.body,
+        {
+          returnDocument: "after",
+          runValidators: true,
+        },
+      );
 
     if (!clienteActualizado) {
       return res.status(404).json({
-        mensaje: "Cliente no encontrado"
+        mensaje: "Cliente no encontrado.",
       });
     }
 
-    res.json(clienteActualizado);
-
+    return res.json(clienteActualizado);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al actualizar cliente",
-      error: error.message
-    });
+    return next(error);
   }
 };

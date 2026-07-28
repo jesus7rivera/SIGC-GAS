@@ -11,6 +11,11 @@ import {
   autorizarRoles,
 } from "../middleware/authMiddleware.js";
 
+import {
+  validarMovimiento,
+  validarParametroObjectId,
+} from "../middleware/validationMiddleware.js";
+
 const router = express.Router();
 
 router.get(
@@ -24,6 +29,7 @@ router.post(
   "/",
   autenticar,
   autorizarRoles("Administrador", "Operador"),
+  validarMovimiento,
   crearMovimiento,
 );
 
@@ -31,6 +37,7 @@ router.get(
   "/cilindro/:cilindroId",
   autenticar,
   autorizarRoles("Administrador", "Operador"),
+  validarParametroObjectId("cilindroId"),
   obtenerHistorialPorCilindro,
 );
 

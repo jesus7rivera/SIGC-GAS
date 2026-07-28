@@ -2,7 +2,11 @@ import Cliente from "../models/Cliente.js";
 import Cilindro from "../models/Cilindro.js";
 import Movimiento from "../models/Movimiento.js";
 
-export const obtenerDashboard = async (req, res) => {
+export const obtenerDashboard = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const [
       clientesActivos,
@@ -42,7 +46,7 @@ export const obtenerDashboard = async (req, res) => {
         .limit(10),
     ]);
 
-    res.json({
+    return res.json({
       resumen: {
         clientesActivos,
         disponibles,
@@ -52,9 +56,6 @@ export const obtenerDashboard = async (req, res) => {
       movimientos,
     });
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener el dashboard",
-      error: error.message,
-    });
+    return next(error);
   }
 };
