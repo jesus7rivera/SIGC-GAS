@@ -1,37 +1,120 @@
 import { useEffect, useState } from "react";
-import { obtenerClientes } from "../services/clienteService";
-import { obtenerCilindros } from "../services/cilindroService";
 
-function ModalMovimiento({ onClose, onGuardar }) {
+import {
+  obtenerClientes,
+} from "../services/clienteService";
+
+import {
+  obtenerCilindros,
+} from "../services/cilindroService";
+
+const tiposPorEstado = {
+  Disponible: [
+    "Salida",
+    "Mantenimiento",
+  ],
+
+  Prestado: [
+    "Devolución",
+    "Mantenimiento",
+  ],
+
+  Mantenimiento: [
+    "Fin de mantenimiento",
+  ],
+};
+
+function ModalMovimiento({
+  onClose,
+  onGuardar,
+}) {
   const [clientes, setClientes] = useState([]);
-  const [cilindros, setCilindros] = useState([]);
+  const [cilindros, setCilindros] =
+    useState([]);
 
   const [cliente, setCliente] = useState("");
-  const [cilindro, setCilindro] = useState("");
-  const [tipo, setTipo] = useState("Salida");
-  const [observacion, setObservacion] = useState("");
+  const [cilindro, setCilindro] =
+    useState("");
+  const [tipo, setTipo] = useState("");
+  const [observacion, setObservacion] =
+    useState("");
+
+  const [mensajeError, setMensajeError] =
+    useState("");
+
+  const [guardando, setGuardando] =
+    useState(false);
 
   useEffect(() => {
-  const cargarDatos = async () => {
-    try {
-      const clientesDB = await obtenerClientes();
-      const cilindrosDB = await obtenerCilindros();
+    const cargarDatos = async () => {
+      try {
+        const [
+          clientesDB,
+          cilindrosDB,
+        ] = await Promise.all([
+          obtenerClientes(),
+          obtenerCilindros(),
+        ]);
 
-      setClientes(clientesDB);
-      setCilindros(cilindrosDB);
-    } catch (error) {
-      console.error("Error al cargar datos:", error);
-    }
+        setClientes(clientesDB);
+        setCilindros(cilindrosDB);
+      } catch (error) {
+        console.error(
+          "Error al cargar datos:",
+          error,
+        );
+
+        setMensajeError(
+          "No se pudieron cargar los clientes y cilindros.",
+        );
+      }
+    };
+
+    cargarDatos();
+  }, []);
+
+  const clientesActivos = clientes.filter(
+    (item) => item.estado === "Activo",
+  );
+
+  const cilindroSeleccionado =
+    cilindros.find(
+      (item) => item._id === cilindro,
+    );
+
+  const tiposDisponibles =
+    tiposPorEstado[
+      cilindroSeleccionado?.estado
+    ] ?? [];
+
+  const manejarCambioCilindro = (evento) => {
+    const cilindroId = evento.target.value;
+
+    setCilindro(cilindroId);
+    setMensajeError("");
+
+    const cilindroEncontrado =
+      cilindros.find(
+        (item) => item._id === cilindroId,
+      );
+
+    const opcionesPermitidas =
+      tiposPorEstado[
+        cilindroEncontrado?.estado
+      ] ?? [];
+
+    setTipo(opcionesPermitidas[0] ?? "");
   };
 
-  cargarDatos();
-}, []);
-
-  const manejarGuardar = (e) => {
-    e.preventDefault();
+  const manejarGuardar = async (evento) => {
+    evento.preventDefault();
+    setMensajeError("");
 
     if (!cliente || !cilindro || !tipo) {
-      alert("Seleccione cliente, cilindro y tipo de movimiento");
+      setMensajeError(
+        "Seleccione cliente, cilindro y tipo de movimiento.",
+      );
+
       return;
     }
 
@@ -39,11 +122,38 @@ function ModalMovimiento({ onClose, onGuardar }) {
       cliente,
       cilindro,
       tipo,
-      observacion
+      observacion,
     };
 
-    onGuardar(nuevoMovimiento);
-    onClose();
+    setGuardando(true);
+
+    try {
+      const resultado = await onGuardar(
+        nuevoMovimiento,
+      );
+
+      if (!resultado?.exito) {
+        setMensajeError(
+          resultado?.mensaje ??
+            "No se pudo registrar el movimiento.",
+        );
+
+        return;
+      }
+
+      onClose();
+    } catch (error) {
+      console.error(
+        "Error inesperado al guardar:",
+        error,
+      );
+
+      setMensajeError(
+        "Ocurrió un error inesperado al registrar el movimiento.",
+      );
+    } finally {
+      setGuardando(false);
+    }
   };
 
   return (
@@ -53,15 +163,30 @@ function ModalMovimiento({ onClose, onGuardar }) {
 
         <form onSubmit={manejarGuardar}>
           <div className="form-group">
-            <label>Cliente</label>
-            <select
-              value={cliente}
-              onChange={(e) => setCliente(e.target.value)}
-            >
-              <option value="">Seleccione un cliente</option>
+            <label htmlFor="movimiento-cliente">
+              Cliente
+            </label>
 
-              {clientes.map((item) => (
-                <option key={item._id} value={item._id}>
+            <select
+              id="movimiento-cliente"
+              value={cliente}
+              onChange={(evento) => {
+                setCliente(
+                  evento.target.value,
+                );
+
+                setMensajeError("");
+              }}
+            >
+              <option value="">
+                Seleccione un cliente
+              </option>
+
+              {clientesActivos.map((item) => (
+                <option
+                  key={item._id}
+                  value={item._id}
+                >
                   {item.nombre} - DNI: {item.dni}
                 </option>
               ))}
@@ -69,50 +194,118 @@ function ModalMovimiento({ onClose, onGuardar }) {
           </div>
 
           <div className="form-group">
-            <label>Cilindro</label>
+            <label htmlFor="movimiento-cilindro">
+              Cilindro
+            </label>
+
             <select
+              id="movimiento-cilindro"
               value={cilindro}
-              onChange={(e) => setCilindro(e.target.value)}
+              onChange={
+                manejarCambioCilindro
+              }
             >
-              <option value="">Seleccione un cilindro</option>
+              <option value="">
+                Seleccione un cilindro
+              </option>
 
               {cilindros.map((item) => (
-                <option key={item._id} value={item._id}>
-                  {item.codigo} - {item.tipo} - {item.estado}
+                <option
+                  key={item._id}
+                  value={item._id}
+                >
+                  {item.codigo} - {item.tipo} -{" "}
+                  {item.estado}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="form-group">
-            <label>Tipo de Movimiento</label>
+            <label htmlFor="movimiento-tipo">
+              Tipo de Movimiento
+            </label>
+
             <select
+              id="movimiento-tipo"
               value={tipo}
-              onChange={(e) => setTipo(e.target.value)}
+              onChange={(evento) => {
+                setTipo(evento.target.value);
+                setMensajeError("");
+              }}
+              disabled={!cilindro}
             >
-              <option>Salida</option>
-              <option>Devolución</option>
-              <option>Mantenimiento</option>
+              <option value="">
+                Seleccione un tipo
+              </option>
+
+              {tiposDisponibles.map(
+                (tipoDisponible) => (
+                  <option
+                    key={tipoDisponible}
+                    value={tipoDisponible}
+                  >
+                    {tipoDisponible}
+                  </option>
+                ),
+              )}
             </select>
           </div>
 
+          {cilindroSeleccionado && (
+            <p>
+              Estado actual del cilindro:{" "}
+              <strong>
+                {cilindroSeleccionado.estado}
+              </strong>
+            </p>
+          )}
+
           <div className="form-group">
-            <label>Observación</label>
+            <label htmlFor="movimiento-observacion">
+              Observación
+            </label>
+
             <input
+              id="movimiento-observacion"
               type="text"
+              maxLength={250}
               placeholder="Ejemplo: Entrega a cliente"
               value={observacion}
-              onChange={(e) => setObservacion(e.target.value)}
+              onChange={(evento) => {
+                setObservacion(
+                  evento.target.value,
+                );
+
+                setMensajeError("");
+              }}
             />
           </div>
 
+          {mensajeError && (
+            <p role="alert">
+              {mensajeError}
+            </p>
+          )}
+
           <div className="form-buttons">
-            <button type="button" className="btn-cancel" onClick={onClose}>
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={onClose}
+              disabled={guardando}
+            >
               Cancelar
             </button>
 
-            <button type="submit" className="btn-primary">
-              Guardar
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={guardando}
+            >
+              {guardando
+                ? "Guardando..."
+                : "Guardar"}
             </button>
           </div>
         </form>

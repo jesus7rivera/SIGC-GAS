@@ -10,7 +10,8 @@
     "lint": "eslint src",
     "seed:test": "node src/scripts/seedTestData.js",
     "test:security-api": "node src/scripts/securityApiTests.js",
-    "test:validation-api": "node src/scripts/validationApiTests.js"
+    "test:validation-api": "node src/scripts/validationApiTests.js",
+    "test:business-rules-api": "node src/scripts/businessRulesApiTests.js"
   },
   "keywords": [],
   "author": "",

@@ -152,6 +152,9 @@ jobs:
           echo "Ejecutando pruebas de validacion de la API."
           npm --prefix backend run test:validation-api
 
+          echo "Ejecutando pruebas de reglas de negocio de la API."
+          npm --prefix backend run test:business-rules-api
+
           for intento in {1..30}; do
             if curl --fail --silent http://127.0.0.1:5173/ > /dev/null; then
               echo "Frontend listo."

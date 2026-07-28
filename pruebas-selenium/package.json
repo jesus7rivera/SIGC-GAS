@@ -11,7 +11,8 @@
   "test:seguridad-operador": "node seguridad/operadorNoAccedeClientes.test.js",
   "test:cliente-crud": "node clientes/clienteCRUD.test.js",
   "test:movimiento-estado": "node movimientos/movimientoEstado.test.js",
-  "test:ci": "npm run test:login-correcto && npm run test:login-incorrecto && npm run test:seguridad-operador && npm run test:cliente-crud && npm run test:movimiento-estado"
+  "test:ciclo-mantenimiento": "node movimientos/cicloMantenimiento.test.js",
+  "test:ci": "npm run test:login-correcto && npm run test:login-incorrecto && npm run test:seguridad-operador && npm run test:cliente-crud && npm run test:movimiento-estado && npm run test:ciclo-mantenimiento"
 },
   "keywords": [],
   "author": "",

@@ -23,14 +23,37 @@ function Movimientos() {
 
   cargarMovimientos();
 }, []);
-  const guardarMovimiento = async (nuevoMovimiento) => {
-    try {
-      const movimientoGuardado = await crearMovimiento(nuevoMovimiento);
-      setMovimientos([movimientoGuardado, ...movimientos]);
-    } catch (error) {
-      console.error("Error al guardar movimiento:", error);
-    }
-  };
+  const guardarMovimiento = async (
+  nuevoMovimiento,
+) => {
+  try {
+    const movimientoGuardado =
+      await crearMovimiento(nuevoMovimiento);
+
+    setMovimientos((movimientosAnteriores) => [
+      movimientoGuardado,
+      ...movimientosAnteriores,
+    ]);
+
+    return {
+      exito: true,
+    };
+  } catch (error) {
+    console.error(
+      "Error al guardar movimiento:",
+      error,
+    );
+
+    const mensaje =
+      error.response?.data?.mensaje ??
+      "No se pudo registrar el movimiento.";
+
+    return {
+      exito: false,
+      mensaje,
+    };
+  }
+};
 
   const generarReportePDF = () => {
     const doc = new jsPDF();

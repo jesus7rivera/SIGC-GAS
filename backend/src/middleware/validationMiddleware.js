@@ -302,11 +302,12 @@ export const validarMovimiento = (
     "Salida",
     "Devolución",
     "Mantenimiento",
+    "Fin de mantenimiento",
   ];
 
   if (!tiposPermitidos.includes(tipo)) {
     errores.push(
-      "El tipo debe ser Salida, Devolución o Mantenimiento.",
+      "El tipo debe ser Salida, Devolución," + "Mantenimiento o Fin de mantenimiento.",
     );
   }
 
