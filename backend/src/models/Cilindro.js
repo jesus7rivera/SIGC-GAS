@@ -5,26 +5,51 @@ const cilindroSchema = new mongoose.Schema(
     codigo: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      trim: true,
+      uppercase: true,
+      match: /^CIL-[A-Z0-9-]{1,20}$/,
     },
+
     tipo: {
       type: String,
-      required: true
+      required: true,
+      enum: [
+        "Doméstico",
+        "Industrial",
+        "Comercial",
+      ],
     },
+
     capacidad: {
       type: String,
-      required: true
+      required: true,
+      enum: [
+        "10 Kg",
+        "15 Kg",
+        "45 Kg",
+      ],
     },
+
     estado: {
       type: String,
-      default: "Disponible"
-    }
+      required: true,
+      enum: [
+        "Disponible",
+        "Prestado",
+        "Mantenimiento",
+      ],
+      default: "Disponible",
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
-const Cilindro = mongoose.model("Cilindro", cilindroSchema);
+const Cilindro = mongoose.model(
+  "Cilindro",
+  cilindroSchema,
+);
 
 export default Cilindro;

@@ -7,6 +7,10 @@ import cilindroRoutes from "./routes/cilindroRoutes.js";
 import movimientoRoutes from "./routes/movimientoRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import {
+  manejarErrores,
+  manejarRutaNoEncontrada,
+} from "./middleware/errorMiddleware.js";
 
 dotenv.config();
 conectarDB();
@@ -23,6 +27,8 @@ app.use("/api/auth", authRoutes);
 app.get("/", (req, res) => {
   res.send("API SIGC-GAS funcionando correctamente");
 });
+app.use(manejarRutaNoEncontrada);
+app.use(manejarErrores);
 
 const PORT = process.env.PORT || 5000;
 

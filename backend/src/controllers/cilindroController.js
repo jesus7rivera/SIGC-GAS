@@ -1,78 +1,91 @@
 import Cilindro from "../models/Cilindro.js";
 
-export const obtenerCilindros = async (req, res) => {
+export const obtenerCilindros = async (
+  req,
+  res,
+  next,
+) => {
   try {
-    const cilindros = await Cilindro.find().sort({ createdAt: -1 });
-    res.json(cilindros);
-  } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener cilindros",
-      error: error.message
+    const cilindros = await Cilindro.find().sort({
+      createdAt: -1,
     });
+
+    return res.json(cilindros);
+  } catch (error) {
+    return next(error);
   }
 };
 
-export const crearCilindro = async (req, res) => {
+export const crearCilindro = async (
+  req,
+  res,
+  next,
+) => {
   try {
-    const nuevoCilindro = new Cilindro(req.body);
-    const cilindroGuardado = await nuevoCilindro.save();
+    const cilindroGuardado = await Cilindro.create(
+      req.body,
+    );
 
-    res.status(201).json(cilindroGuardado);
+    return res.status(201).json(
+      cilindroGuardado,
+    );
   } catch (error) {
-    res.status(400).json({
-      mensaje: "Error al crear cilindro",
-      error: error.message
-    });
+    return next(error);
   }
 };
 
-export const eliminarCilindro = async (req, res) => {
+export const eliminarCilindro = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const { id } = req.params;
 
-    const cilindroEliminado = await Cilindro.findByIdAndDelete(id);
+    const cilindroEliminado =
+      await Cilindro.findByIdAndDelete(id);
 
     if (!cilindroEliminado) {
       return res.status(404).json({
-        mensaje: "Cilindro no encontrado"
+        mensaje: "Cilindro no encontrado.",
       });
     }
 
-    res.json({
-      mensaje: "Cilindro eliminado correctamente",
-      cilindro: cilindroEliminado
+    return res.json({
+      mensaje: "Cilindro eliminado correctamente.",
+      cilindro: cilindroEliminado,
     });
-
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al eliminar cilindro",
-      error: error.message
-    });
+    return next(error);
   }
 };
 
-export const actualizarCilindro = async (req, res) => {
+export const actualizarCilindro = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const { id } = req.params;
 
-    const cilindroActualizado = await Cilindro.findByIdAndUpdate(
-      id,
-      req.body,
-      { new: true }
-    );
+    const cilindroActualizado =
+      await Cilindro.findByIdAndUpdate(
+        id,
+        req.body,
+        {
+          returnDocument: "after",
+          runValidators: true,
+        },
+      );
 
     if (!cilindroActualizado) {
       return res.status(404).json({
-        mensaje: "Cilindro no encontrado"
+        mensaje: "Cilindro no encontrado.",
       });
     }
 
-    res.json(cilindroActualizado);
-
+    return res.json(cilindroActualizado);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al actualizar cilindro",
-      error: error.message
-    });
+    return next(error);
   }
 };

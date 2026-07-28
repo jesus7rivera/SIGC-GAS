@@ -5,31 +5,45 @@ const movimientoSchema = new mongoose.Schema(
     cliente: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Cliente",
-      required: true
+      required: true,
     },
+
     cilindro: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Cilindro",
-      required: true
+      required: true,
     },
+
     tipo: {
       type: String,
-      required: true
+      required: true,
+      enum: [
+        "Salida",
+        "Devolución",
+        "Mantenimiento",
+      ],
     },
+
     observacion: {
       type: String,
-      default: ""
+      trim: true,
+      maxlength: 250,
+      default: "",
     },
+
     fecha: {
       type: Date,
-      default: Date.now
-    }
+      default: Date.now,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
-const Movimiento = mongoose.model("Movimiento", movimientoSchema);
+const Movimiento = mongoose.model(
+  "Movimiento",
+  movimientoSchema,
+);
 
 export default Movimiento;

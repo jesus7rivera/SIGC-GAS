@@ -9,7 +9,8 @@
     "dev": "nodemon --watch src src/server.js",
     "lint": "eslint src",
     "seed:test": "node src/scripts/seedTestData.js",
-    "test:security-api": "node src/scripts/securityApiTests.js"
+    "test:security-api": "node src/scripts/securityApiTests.js",
+    "test:validation-api": "node src/scripts/validationApiTests.js"
   },
   "keywords": [],
   "author": "",
