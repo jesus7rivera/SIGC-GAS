@@ -21,6 +21,7 @@ const movimientoSchema = new mongoose.Schema(
         "Salida",
         "Devolución",
         "Mantenimiento",
+        "Fin de mantenimiento",
       ],
     },
 
