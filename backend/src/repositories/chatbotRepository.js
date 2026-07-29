@@ -1,0 +1,202 @@
+import Cilindro
+  from "../models/Cilindro.js";
+
+import Cliente
+  from "../models/Cliente.js";
+
+import Movimiento
+  from "../models/Movimiento.js";
+
+const PROYECCION_CLIENTE =
+  "dni nombre telefono estado";
+
+const PROYECCION_CILINDRO =
+  "_id codigo tipo capacidad estado";
+
+const PROYECCION_MOVIMIENTO =
+  "fecha cliente cilindro tipo observacion";
+
+const LIMITE_MAXIMO = 11;
+
+const normalizarLimite = (
+  limite,
+) => {
+  if (
+    !Number.isInteger(limite)
+    || limite <= 0
+  ) {
+    return 10;
+  }
+
+  return Math.min(
+    limite,
+    LIMITE_MAXIMO,
+  );
+};
+
+const prepararConsultaMovimientos = (
+  consulta,
+  limite,
+) =>
+  consulta
+    .select(
+      PROYECCION_MOVIMIENTO,
+    )
+    .populate(
+      "cliente",
+      "nombre",
+    )
+    .populate(
+      "cilindro",
+      "codigo",
+    )
+    .sort({
+      fecha: -1,
+    })
+    .limit(
+      normalizarLimite(
+        limite,
+      ),
+    )
+    .lean();
+
+export const crearChatbotRepository = (
+  {
+    clienteModel = Cliente,
+    cilindroModel = Cilindro,
+    movimientoModel = Movimiento,
+  } = {},
+) => ({
+  contarClientesPorEstado(
+    estado,
+  ) {
+    const filtro =
+      estado === "Todos"
+        ? {}
+        : {
+          estado,
+        };
+
+    return clienteModel
+      .countDocuments(
+        filtro,
+      );
+  },
+
+  contarCilindrosPorEstado(
+    estado,
+  ) {
+    return cilindroModel
+      .countDocuments({
+        estado,
+      });
+  },
+
+  listarCilindrosPorEstado(
+    estado,
+    limite,
+  ) {
+    return cilindroModel
+      .find({
+        estado,
+      })
+      .select(
+        PROYECCION_CILINDRO,
+      )
+      .sort({
+        codigo: 1,
+      })
+      .limit(
+        normalizarLimite(
+          limite,
+        ),
+      )
+      .lean();
+  },
+
+  buscarCilindroPorCodigo(
+    codigo,
+  ) {
+    if (
+      typeof codigo !== "string"
+      || !codigo.trim()
+    ) {
+      return null;
+    }
+
+    const codigoNormalizado =
+      codigo
+        .trim()
+        .toUpperCase();
+
+    return cilindroModel
+      .findOne({
+        codigo: codigoNormalizado,
+      })
+      .select(
+        PROYECCION_CILINDRO,
+      )
+      .lean();
+  },
+
+  buscarClientePorDni(
+    dni,
+  ) {
+    if (
+      typeof dni !== "string"
+      || !dni.trim()
+    ) {
+      return null;
+    }
+
+    return clienteModel
+      .findOne({
+        dni: dni.trim(),
+      })
+      .select(
+        PROYECCION_CLIENTE,
+      )
+      .lean();
+  },
+
+  listarMovimientosRecientes(
+    limite,
+  ) {
+    return prepararConsultaMovimientos(
+      movimientoModel.find({}),
+      limite,
+    );
+  },
+
+  listarMovimientosPorRango(
+    desde,
+    hasta,
+    limite,
+  ) {
+    return prepararConsultaMovimientos(
+      movimientoModel.find({
+        fecha: {
+          $gte: desde,
+          $lt: hasta,
+        },
+      }),
+      limite,
+    );
+  },
+
+  listarMovimientosPorCilindro(
+    cilindroId,
+    limite,
+  ) {
+    return prepararConsultaMovimientos(
+      movimientoModel.find({
+        cilindro:
+          cilindroId,
+      }),
+      limite,
+    );
+  },
+});
+
+export const chatbotRepository =
+  crearChatbotRepository();
