@@ -74,6 +74,26 @@ export const clasificarIntencion = (
     return "buscar_cilindro_codigo";
   }
 
+    const esListadoClientes =
+    /\bclientes?\b/.test(mensaje)
+    && coincideConAlguna(
+      mensaje,
+      [
+        /\bmuestrame\b/,
+        /\blista\b/,
+        /\blistar\b/,
+        /\bensename\b/,
+        /\bquiero ver\b/,
+        /\bque clientes\b/,
+        /\bquienes son\b/,
+        /\bdame los clientes\b/,
+      ],
+    );
+
+  if (esListadoClientes) {
+    return "listar_clientes_estado";
+  }
+
   const esBusquedaCliente =
     mensaje.includes("dni")
     || (

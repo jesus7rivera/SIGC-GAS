@@ -61,7 +61,7 @@ describe(
 
         assert.equal(
           resultado.datos.ejemplos.length,
-          5,
+          6,
         );
       },
     );

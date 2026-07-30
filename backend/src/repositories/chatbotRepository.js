@@ -10,6 +10,9 @@ import Movimiento
 const PROYECCION_CLIENTE =
   "dni nombre telefono estado";
 
+const PROYECCION_LISTADO_CLIENTE =
+  "nombre estado";
+
 const PROYECCION_CILINDRO =
   "_id codigo tipo capacidad estado";
 
@@ -81,6 +84,36 @@ export const crearChatbotRepository = (
       .countDocuments(
         filtro,
       );
+  },
+
+    listarClientesPorEstado(
+    estado,
+    limite,
+  ) {
+    const filtro =
+      estado === "Todos"
+        ? {}
+        : {
+          estado,
+        };
+
+    return clienteModel
+      .find(
+        filtro,
+      )
+      .select(
+        PROYECCION_LISTADO_CLIENTE,
+      )
+      .sort({
+        nombre: 1,
+        dni: 1,
+      })
+      .limit(
+        normalizarLimite(
+          limite,
+        ),
+      )
+      .lean();
   },
 
   contarCilindrosPorEstado(

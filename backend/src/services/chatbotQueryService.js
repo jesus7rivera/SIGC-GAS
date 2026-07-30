@@ -35,6 +35,34 @@ const formatearCliente = (
   estado: cliente.estado,
 });
 
+const formatearClienteListado = (
+  cliente,
+) => ({
+  nombre: cliente.nombre,
+  estado: cliente.estado,
+});
+
+const describirEstadoCliente = (
+  estado,
+  cantidad,
+) => {
+  if (estado === "Todos") {
+    return cantidad === 1
+      ? "registrado"
+      : "registrados";
+  }
+
+  if (estado === "Activo") {
+    return cantidad === 1
+      ? "activo"
+      : "activos";
+  }
+
+  return cantidad === 1
+    ? "inactivo"
+    : "inactivos";
+};
+
 const formatearMovimiento = (
   movimiento,
 ) => ({
@@ -234,6 +262,71 @@ const ejecutarConteoClientes =
         estado,
         cantidad,
       },
+    };
+  };
+
+const ejecutarListadoClientes =
+  async (
+    repositorio,
+    parametros,
+  ) => {
+    const {
+      estado,
+    } = parametros;
+
+    const resultados =
+      await repositorio
+        .listarClientesPorEstado(
+          estado,
+          LIMITE_RESULTADOS + 1,
+        );
+
+    const {
+      elementos,
+      hayMas,
+    } = limitarResultados(
+      resultados,
+    );
+
+    if (elementos.length === 0) {
+      return {
+        respuesta:
+          "No se encontraron clientes con el estado solicitado.",
+        datos: [],
+      };
+    }
+
+    const cantidad =
+      elementos.length;
+
+    const sustantivo =
+      cantidad === 1
+        ? "cliente"
+        : "clientes";
+
+    const descripcion =
+      describirEstadoCliente(
+        estado,
+        cantidad,
+      );
+
+    const verbo =
+      cantidad === 1
+        ? "Se encontró"
+        : "Se encontraron";
+
+    const complemento =
+      hayMas
+        ? " Se muestran los primeros 10 resultados."
+        : "";
+
+    return {
+      respuesta:
+        `${verbo} ${cantidad} ${sustantivo} ${descripcion}.${complemento}`,
+      datos:
+        elementos.map(
+          formatearClienteListado,
+        ),
     };
   };
 
@@ -508,6 +601,12 @@ export const ejecutarConsultaChatbot =
 
       case "contar_clientes_estado":
         return ejecutarConteoClientes(
+          repositorio,
+          parametros,
+        );
+
+        case "listar_clientes_estado":
+        return ejecutarListadoClientes(
           repositorio,
           parametros,
         );
