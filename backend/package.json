@@ -11,7 +11,9 @@
     "seed:test": "node src/scripts/seedTestData.js",
     "test:security-api": "node src/scripts/securityApiTests.js",
     "test:validation-api": "node src/scripts/validationApiTests.js",
-    "test:business-rules-api": "node src/scripts/businessRulesApiTests.js"
+    "test:business-rules-api": "node src/scripts/businessRulesApiTests.js",
+    "test:chatbot-api": "node src/scripts/chatbotApiTests.js",
+    "test:chatbot-unit": "node --test src/chatbot/chatbotCore.test.js src/chatbot/entityExtractor.test.js src/services/chatbotService.test.js src/services/chatbotQueryService.test.js src/repositories/chatbotRepository.test.js src/services/chatbotApplicationService.test.js src/middleware/chatbotValidationMiddleware.test.js src/controllers/chatbotController.test.js"
   },
   "keywords": [],
   "author": "",
