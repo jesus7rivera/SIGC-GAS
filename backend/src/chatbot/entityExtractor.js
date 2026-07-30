@@ -192,6 +192,7 @@ export const extraerParametros = (
       );
 
     case "contar_clientes_estado":
+    case "listar_clientes_estado":
       return agregarParametro(
         parametros,
         "estado",

@@ -16,6 +16,7 @@ const EJEMPLOS_AYUDA = [
   "¿Cuántos clientes activos existen?",
   "Muéstrame los últimos movimientos",
   "Historial del cilindro CIL-001",
+  "Muéstrame los clientes activos",
 ];
 
 const RESPUESTAS_FIJAS = {
@@ -99,8 +100,12 @@ const obtenerAclaracion = (
   }
 
   const requiereEstadoCliente =
+  (
     intencion
       === "contar_clientes_estado"
+      || intencion
+      === "listar_clientes_estado"
+    )
     && !parametros.estado;
 
   if (requiereEstadoCliente) {
