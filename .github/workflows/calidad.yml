@@ -37,6 +37,8 @@ jobs:
 
       - name: Analizar calidad del codigo
         run: npm run lint
+      - name: Probar contexto conversacional del chatbot
+        run: npm run test:chatbot-context
 
       - name: Compilar frontend
         run: npm run build
