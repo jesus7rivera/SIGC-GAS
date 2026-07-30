@@ -65,6 +65,8 @@ jobs:
 
       - name: Analizar calidad del codigo
         run: npm run lint
+      - name: Ejecutar pruebas unitarias del chatbot
+        run: npm run test:chatbot-unit
 
   selenium:
     name: Ejecutar pruebas Selenium
@@ -154,6 +156,8 @@ jobs:
 
           echo "Ejecutando pruebas de reglas de negocio de la API."
           npm --prefix backend run test:business-rules-api
+          echo "Ejecutando pruebas de la API del chatbot."
+          npm --prefix backend run test:chatbot-api
 
           for intento in {1..30}; do
             if curl --fail --silent http://127.0.0.1:5173/ > /dev/null; then
