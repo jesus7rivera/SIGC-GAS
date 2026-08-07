@@ -246,6 +246,7 @@ export const extraerParametros = (
   );
 
 case "consultar_prestamos_antiguos":
+case "consultar_clientes_sin_actividad":
   return agregarParametro(
     parametros,
     "diasMinimos",

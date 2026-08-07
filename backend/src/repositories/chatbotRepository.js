@@ -13,6 +13,9 @@ const PROYECCION_CLIENTE =
 const PROYECCION_LISTADO_CLIENTE =
   "nombre estado";
 
+const PROYECCION_CLIENTE_SEGUIMIENTO =
+  "_id nombre estado createdAt";
+
 const PROYECCION_CILINDRO =
   "_id codigo tipo capacidad estado";
 
@@ -118,6 +121,51 @@ export const crearChatbotRepository = (
       )
       .lean();
   },
+  async listarClientesActivosParaSeguimiento() {
+  const clientes =
+    await clienteModel
+      .find({
+        estado: "Activo",
+      })
+      .select(
+        PROYECCION_CLIENTE_SEGUIMIENTO,
+      )
+      .sort({
+        nombre: 1,
+      })
+      .lean();
+
+  if (clientes.length === 0) {
+    return [];
+  }
+
+  return Promise.all(
+    clientes.map(
+      async (cliente) => {
+        const ultimoMovimiento =
+          await movimientoModel
+            .findOne({
+              cliente:
+                cliente._id,
+            })
+            .select(
+              "fecha",
+            )
+            .sort({
+              fecha: -1,
+            })
+            .lean();
+
+        return {
+          cliente,
+          ultimoMovimiento:
+            ultimoMovimiento
+            ?? null,
+        };
+      },
+    ),
+  );
+},
 
   contarCilindrosPorEstado(
     estado,

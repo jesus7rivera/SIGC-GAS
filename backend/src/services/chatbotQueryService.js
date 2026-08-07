@@ -899,6 +899,152 @@ const ejecutarPrestamosActivos =
     };
   };
 
+  const ejecutarClientesSinActividad =
+  async (
+    repositorio,
+    parametros,
+    ahora,
+  ) => {
+    const diasMinimos =
+      Number.isInteger(
+        parametros.diasMinimos,
+      )
+      && parametros.diasMinimos > 0
+        ? parametros.diasMinimos
+        : 30;
+
+    const resultados =
+      await repositorio
+        .listarClientesActivosParaSeguimiento();
+
+    const clientes =
+      resultados
+        .map(
+          ({
+            cliente,
+            ultimoMovimiento,
+          }) => {
+            const sinMovimientos =
+              !ultimoMovimiento;
+
+            const fechaReferencia =
+              ultimoMovimiento?.fecha
+              ?? cliente?.createdAt;
+
+            const fecha =
+              new Date(
+                fechaReferencia,
+              );
+
+            if (
+              Number.isNaN(
+                fecha.getTime(),
+              )
+            ) {
+              return null;
+            }
+
+            const diferencia =
+              ahora.getTime()
+              - fecha.getTime();
+
+            if (diferencia < 0) {
+              return null;
+            }
+
+            const diasSinActividad =
+              Math.floor(
+                diferencia
+                / (
+                  1000
+                  * 60
+                  * 60
+                  * 24
+                ),
+              );
+
+            return {
+              nombre:
+                cliente.nombre,
+              ultimaActividad:
+                ultimoMovimiento?.fecha
+                ?? null,
+              fechaRegistro:
+                cliente.createdAt
+                ?? null,
+              diasSinActividad,
+              sinMovimientos,
+            };
+          },
+        )
+        .filter(
+          (cliente) =>
+            cliente !== null
+            && cliente
+              .diasSinActividad
+              > diasMinimos,
+        );
+
+    const {
+      elementos,
+      hayMas,
+    } =
+      limitarResultados(
+        clientes,
+      );
+
+    if (
+      elementos.length === 0
+    ) {
+      return {
+        respuesta:
+          `No hay clientes activos con más de ${diasMinimos} días sin actividad.`,
+        datos: [],
+      };
+    }
+
+    const lineas =
+      elementos.map(
+        (cliente) => {
+          if (
+            cliente
+              .sinMovimientos
+          ) {
+            return (
+              `${cliente.nombre} — `
+              + "Sin movimientos registrados — "
+              + `${cliente.diasSinActividad} días sin actividad`
+            );
+          }
+
+          return (
+            `${cliente.nombre} — `
+            + `${cliente.diasSinActividad} días sin actividad`
+          );
+        },
+      );
+
+    const aviso =
+      hayMas
+        ? "\nSe muestran únicamente los primeros resultados."
+        : "";
+
+    const encabezado =
+  elementos.length === 1
+    ? "1 cliente activo lleva"
+    : `${elementos.length} clientes activos llevan`;
+
+return {
+  respuesta:
+    `${encabezado} más de `
+    + `${diasMinimos} días sin actividad.\n`
+    + lineas.join("\n")
+    + aviso,
+  datos:
+    elementos,
+};
+  };
+
   export const ejecutarConsultaChatbot =
   async (
     solicitud,
@@ -937,7 +1083,12 @@ const ejecutarPrestamosActivos =
         parametros,
         ahora,
   );
-
+      case "consultar_clientes_sin_actividad":
+        return ejecutarClientesSinActividad(
+        repositorio,
+        parametros,
+        ahora,
+  );
       case "contar_cilindros_estado":
         return ejecutarConteoCilindros(
           repositorio,
