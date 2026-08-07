@@ -166,5 +166,42 @@ describe(
         );
       },
     );
+        test(
+      "resuelve quién tiene los cilindros prestados",
+      () => {
+        const consulta =
+          resolverConsultaContextual(
+            "¿Quién los tiene?",
+            {
+              tipo: "cilindros",
+              estado: "Prestado",
+            },
+          );
+
+        assert.equal(
+          consulta,
+          "¿Quién tiene los cilindros prestados?",
+        );
+      },
+    );
+
+    test(
+      "no atribuye responsables a cilindros disponibles",
+      () => {
+        const consulta =
+          resolverConsultaContextual(
+            "¿Quién los tiene?",
+            {
+              tipo: "cilindros",
+              estado: "Disponible",
+            },
+          );
+
+        assert.equal(
+          consulta,
+          "¿Quién los tiene?",
+        );
+      },
+    );
   },
 );

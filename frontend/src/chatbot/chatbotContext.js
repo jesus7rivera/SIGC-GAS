@@ -64,6 +64,36 @@ const esSeguimientoDeListado = (
   );
 };
 
+const esSeguimientoResponsablePrestamo = (
+  mensaje,
+) => {
+  const mensajeNormalizado =
+    normalizarTexto(
+      mensaje,
+    );
+
+  return (
+    /^quien los tiene\b/.test(
+      mensajeNormalizado,
+    )
+    || /^quienes los tienen\b/.test(
+      mensajeNormalizado,
+    )
+    || /^quien tiene esos cilindros\b/.test(
+      mensajeNormalizado,
+    )
+    || /^quienes tienen esos cilindros\b/.test(
+      mensajeNormalizado,
+    )
+    || /^que cliente los tiene\b/.test(
+      mensajeNormalizado,
+    )
+    || /^que clientes los tienen\b/.test(
+      mensajeNormalizado,
+    )
+  );
+};
+
 const construirListadoClientes = (
   estado,
 ) => {
@@ -155,9 +185,27 @@ export const resolverConsultaContextual = (
       ? mensaje.trim()
       : "";
 
+    if (!contexto) {
+    return mensajeLimpio;
+  }
+
   if (
-    !contexto
-    || !esSeguimientoDeListado(
+    contexto.tipo
+      === "cilindros"
+    && contexto.estado
+      === "Prestado"
+    && esSeguimientoResponsablePrestamo(
+      mensajeLimpio,
+    )
+  ) {
+    return (
+      "¿Quién tiene los "
+      + "cilindros prestados?"
+    );
+  }
+
+  if (
+    !esSeguimientoDeListado(
       mensajeLimpio,
     )
   ) {

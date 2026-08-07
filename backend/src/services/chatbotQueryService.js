@@ -1,5 +1,8 @@
 const LIMITE_RESULTADOS = 10;
 
+const MILISEGUNDOS_POR_DIA =
+  1000 * 60 * 60 * 24;
+
 const limitarResultados = (
   resultados,
 ) => {
@@ -89,6 +92,141 @@ const formatearMovimientoHistorial = (
   observacion:
     movimiento.observacion ?? "",
 });
+
+const convertirFechaIso = (
+  fecha,
+) => {
+  if (!fecha) {
+    return null;
+  }
+
+  const valor =
+    new Date(fecha);
+
+  if (
+    Number.isNaN(
+      valor.getTime(),
+    )
+  ) {
+    return null;
+  }
+
+  return valor.toISOString();
+};
+
+const formatearFechaPrestamo = (
+  fecha,
+) => {
+  const fechaIso =
+    convertirFechaIso(
+      fecha,
+    );
+
+  if (!fechaIso) {
+    return "fecha no disponible";
+  }
+
+  const [
+    anio,
+    mes,
+    dia,
+  ] = fechaIso
+    .slice(
+      0,
+      10,
+    )
+    .split("-");
+
+  return `${dia}/${mes}/${anio}`;
+};
+
+const calcularDiasPrestado = (
+  fechaSalida,
+  ahora,
+) => {
+  if (!fechaSalida) {
+    return null;
+  }
+
+  const fecha =
+    new Date(
+      fechaSalida,
+    );
+
+  if (
+    Number.isNaN(
+      fecha.getTime(),
+    )
+  ) {
+    return null;
+  }
+
+  const diferencia =
+    ahora.getTime()
+    - fecha.getTime();
+
+  return Math.max(
+    0,
+    Math.floor(
+      diferencia
+      / MILISEGUNDOS_POR_DIA,
+    ),
+  );
+};
+
+const formatearPrestamoActivo = (
+  prestamo,
+  ahora,
+) => {
+  const {
+    cilindro,
+    salida,
+  } = prestamo;
+
+  const fechaSalida =
+    convertirFechaIso(
+      salida?.fecha,
+    );
+
+  const diasPrestado =
+    calcularDiasPrestado(
+      salida?.fecha,
+      ahora,
+    );
+
+  const cliente =
+    salida?.cliente?.nombre
+    ?? null;
+
+  let motivoRevision = null;
+
+  if (!salida) {
+    motivoRevision =
+      "El cilindro figura como prestado, pero no se encontró una salida asociada.";
+  } else if (!cliente) {
+    motivoRevision =
+      "La salida existe, pero el cliente asociado no está disponible en el sistema.";
+  }
+
+  const resultado = {
+    codigo:
+      cilindro.codigo,
+    cliente,
+    fechaSalida,
+    diasPrestado,
+    requiereRevision:
+      Boolean(
+        motivoRevision,
+      ),
+  };
+
+  if (motivoRevision) {
+    resultado.motivoRevision =
+      motivoRevision;
+  }
+
+  return resultado;
+};
 
 const ejecutarResumen = async (
   repositorio,
@@ -554,7 +692,119 @@ const ejecutarHistorialCilindro =
     };
   };
 
-export const ejecutarConsultaChatbot =
+const ejecutarPrestamosActivos =
+  async (
+    repositorio,
+    ahora,
+  ) => {
+    const resultados =
+      await repositorio
+        .listarPrestamosActivos(
+          LIMITE_RESULTADOS + 1,
+        );
+
+    const {
+      elementos,
+      hayMas,
+    } = limitarResultados(
+      resultados,
+    );
+
+    if (
+      elementos.length === 0
+    ) {
+      return {
+        respuesta:
+          "No hay cilindros prestados actualmente.",
+        datos: [],
+      };
+    }
+
+    const prestamos =
+      elementos.map(
+        (prestamo) =>
+          formatearPrestamoActivo(
+            prestamo,
+            ahora,
+          ),
+      );
+
+    const lineas =
+      prestamos.map(
+        (prestamo) => {
+          if (
+  prestamo
+    .requiereRevision
+) {
+  const fecha =
+    prestamo.fechaSalida
+      ? formatearFechaPrestamo(
+        prestamo.fechaSalida,
+      )
+      : "no disponible";
+
+  const tiempo =
+    Number.isInteger(
+      prestamo.diasPrestado,
+    )
+      ? (
+        prestamo.diasPrestado
+          === 1
+          ? "1 día en préstamo"
+          : `${prestamo.diasPrestado} días en préstamo`
+      )
+      : "tiempo no disponible";
+
+  return (
+    `⚠ ${prestamo.codigo} — `
+    + `${prestamo.motivoRevision} `
+    + `Salida: ${fecha} — `
+    + tiempo
+  );
+}
+
+          const descripcionDias =
+            prestamo.diasPrestado
+              === 1
+              ? "1 día en préstamo"
+              : `${prestamo.diasPrestado} días en préstamo`;
+
+          return (
+            `${prestamo.codigo} — `
+            + `${prestamo.cliente} — `
+            + `salida ${
+              formatearFechaPrestamo(
+                prestamo.fechaSalida,
+              )
+            } — `
+            + descripcionDias
+          );
+        },
+      );
+
+    const cantidad =
+      prestamos.length;
+
+    const encabezado =
+      cantidad === 1
+        ? "Se encontró 1 cilindro con préstamo activo:"
+        : `Se encontraron ${cantidad} cilindros con préstamo activo:`;
+
+    const complemento =
+      hayMas
+        ? "\nSe muestran los primeros 10 resultados."
+        : "";
+
+    return {
+      respuesta:
+        `${encabezado}\n`
+        + lineas.join("\n")
+        + complemento,
+      datos: prestamos,
+    };
+  };
+
+  export const ejecutarConsultaChatbot =
   async (
     solicitud,
     dependencias = {},
@@ -579,6 +829,12 @@ export const ejecutarConsultaChatbot =
       case "consultar_resumen":
         return ejecutarResumen(
           repositorio,
+        );
+
+      case "consultar_prestamos_activos":
+        return ejecutarPrestamosActivos(
+          repositorio,
+          ahora,
         );
 
       case "contar_cilindros_estado":

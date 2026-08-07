@@ -90,6 +90,158 @@ const obtenerMensajeError = (
   );
 };
 
+const formatearFechaChatbot = (
+  valor,
+) => {
+  if (!valor) {
+    return "No disponible";
+  }
+
+  const fecha =
+    new Date(valor);
+
+  if (
+    Number.isNaN(
+      fecha.getTime(),
+    )
+  ) {
+    return valor;
+  }
+
+  return new Intl.DateTimeFormat(
+    "es-PE",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "UTC",
+    },
+  ).format(fecha);
+};
+
+const esRespuestaPrestamosActivos = (
+  mensaje,
+) => (
+  mensaje.autor === "asistente"
+  && mensaje.intencion
+    === "consultar_prestamos_activos"
+  && Array.isArray(
+    mensaje.datos,
+  )
+);
+
+const renderizarPrestamosActivos = (
+  mensaje,
+) => {
+  const prestamos =
+    mensaje.datos;
+
+  return (
+    <>
+      <p className="chatbot-result-title">
+        {prestamos.length === 1
+          ? "1 préstamo activo"
+          : `${prestamos.length} préstamos activos`}
+      </p>
+
+      <div className="chatbot-loan-list">
+        {prestamos.map(
+          (prestamo) => (
+            <div
+              key={prestamo.codigo}
+              className={
+                "chatbot-loan-card "
+                + `${
+                  prestamo
+                    .requiereRevision
+                    ? "chatbot-loan-card-warning"
+                    : ""
+                }`
+              }
+            >
+              <div className="chatbot-loan-header">
+                <strong>
+                  {prestamo.codigo}
+                </strong>
+
+                <span
+                  className={
+                    "chatbot-loan-status "
+                    + `${
+                      prestamo
+                        .requiereRevision
+                        ? "chatbot-loan-status-warning"
+                        : ""
+                    }`
+                  }
+                >
+                  {prestamo
+                    .requiereRevision
+                    ? "Revisar"
+                    : "Prestado"}
+                </span>
+              </div>
+
+              {prestamo
+                .requiereRevision && (
+                <p className="chatbot-loan-warning">
+                  {
+                    prestamo
+                      .motivoRevision
+                  }
+                </p>
+              )}
+
+              <div className="chatbot-loan-details">
+                <div>
+                  <span>Cliente</span>
+                  <strong>
+                    {prestamo.cliente
+                      ?? "No disponible"}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>Salida</span>
+                  <strong>
+                    {formatearFechaChatbot(
+                      prestamo
+                        .fechaSalida,
+                    )}
+                  </strong>
+                </div>
+
+                <div>
+                  <span>
+                    Tiempo prestado
+                  </span>
+                  <strong>
+                    {Number.isInteger(
+                      prestamo
+                        .diasPrestado,
+                    )
+                      ? `${
+                        prestamo
+                          .diasPrestado
+                      } ${
+                        prestamo
+                          .diasPrestado
+                          === 1
+                          ? "día"
+                          : "días"
+                      }`
+                      : "No disponible"}
+                  </strong>
+                </div>
+              </div>
+            </div>
+          ),
+        )}
+      </div>
+    </>
+  );
+};
+
 function Chatbot({
   compacto = false,
   onCerrar = null,
@@ -374,9 +526,17 @@ function Chatbot({
                   }`
                 }
               >
-                <p>
-                  {mensaje.contenido}
-                </p>
+                {esRespuestaPrestamosActivos(
+  mensaje,
+)
+  ? renderizarPrestamosActivos(
+    mensaje,
+  )
+  : (
+    <p>
+      {mensaje.contenido}
+    </p>
+  )}
 
                 {mensaje.datos
                   !== null
