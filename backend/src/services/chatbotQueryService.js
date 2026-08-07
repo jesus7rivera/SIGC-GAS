@@ -804,6 +804,101 @@ const ejecutarPrestamosActivos =
     };
   };
 
+  const ejecutarPrestamosAntiguos =
+  async (
+    repositorio,
+    parametros,
+    ahora,
+  ) => {
+    const diasMinimos =
+      Number.isInteger(
+        parametros.diasMinimos,
+      )
+      && parametros.diasMinimos > 0
+        ? parametros.diasMinimos
+        : 30;
+
+    const resultados =
+      await repositorio
+        .listarPrestamosActivosParaSeguimiento();
+
+    const prestamos =
+      resultados
+        .map(
+          (prestamo) =>
+            formatearPrestamoActivo(
+              prestamo,
+              ahora,
+            ),
+        )
+        .filter(
+          (prestamo) =>
+            Number.isInteger(
+              prestamo.diasPrestado,
+            )
+            && prestamo.diasPrestado
+              > diasMinimos,
+        );
+
+    const {
+      elementos,
+      hayMas,
+    } =
+      limitarResultados(
+        prestamos,
+      );
+
+    if (elementos.length === 0) {
+      return {
+        respuesta:
+          `No hay cilindros prestados por más de ${diasMinimos} días.`,
+        datos: [],
+      };
+    }
+
+    const lineas =
+      elementos.map(
+        (prestamo) => {
+          if (
+            prestamo
+              .requiereRevision
+          ) {
+            return (
+              `⚠ ${prestamo.codigo} — `
+              + `${prestamo.motivoRevision} — `
+              + `${prestamo.diasPrestado} días en préstamo`
+            );
+          }
+
+          return (
+            `${prestamo.codigo} — `
+            + `${prestamo.cliente} — `
+            + `${prestamo.diasPrestado} días en préstamo`
+          );
+        },
+      );
+
+    const aviso =
+      hayMas
+        ? "\nSe muestran únicamente los primeros resultados."
+        : "";
+
+    return {
+      respuesta:
+        `${elementos.length} cilindro`
+        + `${
+          elementos.length === 1
+            ? ""
+            : "s"
+        } llevan más de `
+        + `${diasMinimos} días prestados.\n`
+        + lineas.join("\n")
+        + aviso,
+      datos:
+        elementos,
+    };
+  };
+
   export const ejecutarConsultaChatbot =
   async (
     solicitud,
@@ -836,6 +931,12 @@ const ejecutarPrestamosActivos =
           repositorio,
           ahora,
         );
+      case "consultar_prestamos_antiguos":
+        return ejecutarPrestamosAntiguos(
+        repositorio,
+        parametros,
+        ahora,
+  );
 
       case "contar_cilindros_estado":
         return ejecutarConteoCilindros(

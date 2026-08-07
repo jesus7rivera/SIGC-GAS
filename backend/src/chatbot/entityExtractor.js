@@ -168,6 +168,38 @@ export const extraerCantidad = (
   );
 };
 
+export const extraerDiasPrestamo = (
+  mensaje,
+  valorPredeterminado = 30,
+) => {
+  if (typeof mensaje !== "string") {
+    return valorPredeterminado;
+  }
+
+  const coincidencia =
+    mensaje.match(
+      /\b(\d{1,3})\s+dias?\b/,
+    );
+
+  if (!coincidencia) {
+    return valorPredeterminado;
+  }
+
+  const dias =
+    Number(
+      coincidencia[1],
+    );
+
+  if (
+    !Number.isInteger(dias)
+    || dias <= 0
+  ) {
+    return valorPredeterminado;
+  }
+
+  return dias;
+};
+
 export const extraerParametros = (
   intencion,
   mensaje,
@@ -207,13 +239,22 @@ export const extraerParametros = (
       );
 
     case "consultar_movimientos_recientes":
-      return agregarParametro(
-        parametros,
-        "cantidad",
-        extraerCantidad(mensaje),
-      );
+  return agregarParametro(
+    parametros,
+    "cantidad",
+    extraerCantidad(mensaje),
+  );
 
-    default:
-      return parametros;
+case "consultar_prestamos_antiguos":
+  return agregarParametro(
+    parametros,
+    "diasMinimos",
+    extraerDiasPrestamo(
+      mensaje,
+    ),
+  );
+
+default:
+  return parametros;
   }
 };

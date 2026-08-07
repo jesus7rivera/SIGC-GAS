@@ -207,6 +207,56 @@ export const crearChatbotRepository = (
     );
   },
 
+  async listarPrestamosActivosParaSeguimiento() {
+  const cilindros =
+    await cilindroModel
+      .find({
+        estado: "Prestado",
+      })
+      .select(
+        PROYECCION_CILINDRO,
+      )
+      .sort({
+        codigo: 1,
+      })
+      .lean();
+
+  if (cilindros.length === 0) {
+    return [];
+  }
+
+  return Promise.all(
+    cilindros.map(
+      async (cilindro) => {
+        const salida =
+          await movimientoModel
+            .findOne({
+              cilindro:
+                cilindro._id,
+              tipo: "Salida",
+            })
+            .select(
+              PROYECCION_SALIDA_PRESTAMO,
+            )
+            .populate(
+              "cliente",
+              "nombre",
+            )
+            .sort({
+              fecha: -1,
+            })
+            .lean();
+
+        return {
+          cilindro,
+          salida:
+            salida ?? null,
+        };
+      },
+    ),
+  );
+},
+
   buscarCilindroPorCodigo(
     codigo,
   ) {
