@@ -50,6 +50,35 @@ export const clasificarIntencion = (
     return "consultar_historial_cilindro";
   }
 
+    const esConsultaPrestamosActivos =
+    /\bprestamos?\s+activos?\b/.test(
+      mensaje,
+    )
+    || (
+      /\bcilindros?\b/.test(
+        mensaje,
+      )
+      && /\bprestados?\b/.test(
+        mensaje,
+      )
+      && coincideConAlguna(
+        mensaje,
+        [
+          /\bquien\b/,
+          /\bquienes\b/,
+          /\bque cliente\b/,
+          /\bque clientes\b/,
+          /\btiene\b/,
+          /\btienen\b/,
+          /\bresponsable\b/,
+        ],
+      )
+    );
+
+  if (esConsultaPrestamosActivos) {
+    return "consultar_prestamos_activos";
+  }
+
   const contieneCodigoCilindro =
     /\bcil-[a-z0-9-]+\b/.test(mensaje);
 

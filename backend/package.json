@@ -7,13 +7,14 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon --watch src src/server.js",
+    "dev:test": "node src/scripts/startTestServer.js",
     "lint": "eslint src",
     "seed:test": "node src/scripts/seedTestData.js",
     "test:security-api": "node src/scripts/securityApiTests.js",
     "test:validation-api": "node src/scripts/validationApiTests.js",
     "test:business-rules-api": "node src/scripts/businessRulesApiTests.js",
     "test:chatbot-api": "node src/scripts/chatbotApiTests.js",
-    "test:chatbot-unit": "node --test src/chatbot/chatbotCore.test.js src/chatbot/entityExtractor.test.js src/services/chatbotService.test.js src/services/chatbotQueryService.test.js src/repositories/chatbotRepository.test.js src/services/chatbotApplicationService.test.js src/middleware/chatbotValidationMiddleware.test.js src/controllers/chatbotController.test.js src/chatbot/clientListing.test.js"
+    "test:chatbot-unit": "node --test src/chatbot/chatbotCore.test.js src/chatbot/entityExtractor.test.js src/services/chatbotService.test.js src/services/chatbotQueryService.test.js src/repositories/chatbotRepository.test.js src/services/chatbotApplicationService.test.js src/middleware/chatbotValidationMiddleware.test.js src/controllers/chatbotController.test.js src/chatbot/clientListing.test.js src/chatbot/activeLoans.test.js"
   },
   "keywords": [],
   "author": "",

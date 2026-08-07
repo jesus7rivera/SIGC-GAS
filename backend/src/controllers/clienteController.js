@@ -1,4 +1,60 @@
 import Cliente from "../models/Cliente.js";
+import Cilindro from "../models/Cilindro.js";
+import Movimiento from "../models/Movimiento.js";
+
+const clienteTienePrestamoActivo =
+  async (
+    clienteId,
+  ) => {
+    const cilindrosPrestados =
+      await Cilindro.find({
+        estado: "Prestado",
+      })
+        .select(
+          "_id",
+        )
+        .lean();
+
+    for (
+      const cilindro
+      of cilindrosPrestados
+    ) {
+      const ultimoMovimiento =
+        await Movimiento
+          .findOne({
+            cilindro:
+              cilindro._id,
+          })
+          .select(
+            "cliente tipo",
+          )
+          .sort({
+            fecha: -1,
+            createdAt: -1,
+            _id: -1,
+          })
+          .lean();
+
+      const perteneceAlCliente =
+        ultimoMovimiento?.cliente
+        && String(
+          ultimoMovimiento
+            .cliente,
+        ) === String(
+          clienteId,
+        );
+
+      if (
+        ultimoMovimiento?.tipo
+          === "Salida"
+        && perteneceAlCliente
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
 export const obtenerClientes = async (
   req,
@@ -40,20 +96,42 @@ export const eliminarCliente = async (
   next,
 ) => {
   try {
-    const { id } = req.params;
+    const {
+      id,
+    } = req.params;
 
-    const clienteEliminado =
-      await Cliente.findByIdAndDelete(id);
+    const cliente =
+      await Cliente.findById(
+        id,
+      );
 
-    if (!clienteEliminado) {
+    if (!cliente) {
       return res.status(404).json({
-        mensaje: "Cliente no encontrado.",
+        mensaje:
+          "Cliente no encontrado.",
       });
     }
 
+    const tieneHistorial =
+      await Movimiento.exists({
+        cliente: id,
+      });
+
+    if (tieneHistorial) {
+      return res.status(409).json({
+        mensaje:
+          "No se puede eliminar un cliente que tiene movimientos registrados. Puedes marcarlo como Inactivo para conservar su historial.",
+      });
+    }
+
+    await Cliente.deleteOne({
+      _id: id,
+    });
+
     return res.json({
-      mensaje: "Cliente eliminado correctamente.",
-      cliente: clienteEliminado,
+      mensaje:
+        "Cliente eliminado correctamente.",
+      cliente,
     });
   } catch (error) {
     return next(error);
@@ -66,7 +144,41 @@ export const actualizarCliente = async (
   next,
 ) => {
   try {
-    const { id } = req.params;
+    const {
+      id,
+    } = req.params;
+
+    const clienteActual =
+      await Cliente.findById(
+        id,
+      );
+
+    if (!clienteActual) {
+      return res.status(404).json({
+        mensaje:
+          "Cliente no encontrado.",
+      });
+    }
+
+    const intentaDesactivar =
+      clienteActual.estado
+        === "Activo"
+      && req.body.estado
+        === "Inactivo";
+
+    if (intentaDesactivar) {
+      const tienePrestamoActivo =
+        await clienteTienePrestamoActivo(
+          id,
+        );
+
+      if (tienePrestamoActivo) {
+        return res.status(409).json({
+          mensaje:
+            "No se puede desactivar al cliente porque tiene uno o más cilindros prestados. Registra primero las devoluciones pendientes.",
+        });
+      }
+    }
 
     const clienteActualizado =
       await Cliente.findByIdAndUpdate(
@@ -78,13 +190,9 @@ export const actualizarCliente = async (
         },
       );
 
-    if (!clienteActualizado) {
-      return res.status(404).json({
-        mensaje: "Cliente no encontrado.",
-      });
-    }
-
-    return res.json(clienteActualizado);
+    return res.json(
+      clienteActualizado,
+    );
   } catch (error) {
     return next(error);
   }

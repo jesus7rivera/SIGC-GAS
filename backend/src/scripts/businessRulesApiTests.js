@@ -5,14 +5,64 @@ import Cilindro from "../models/Cilindro.js";
 import Movimiento from "../models/Movimiento.js";
 
 const API_BASE_URL =
-  process.env.API_BASE_URL ??
-  "http://127.0.0.1:5000/api";
+  process.env.API_BASE_URL
+  ?? (
+    process.env.CI === "true"
+      ? "http://127.0.0.1:5000/api"
+      : "http://127.0.0.1:5001/api"
+  );
 
 const MONGO_URI =
   process.env.MONGO_URI ??
   "mongodb://127.0.0.1:27017/sigc_gas_test";
 
-const solicitar = async (ruta, opciones = {}) => {
+const validarEntornoPruebas = () => {
+  let nombreBase;
+  let apiUrl;
+
+  try {
+    const uri =
+      new URL(MONGO_URI);
+
+    nombreBase =
+      uri.pathname
+        .replace(
+          /^\//,
+          "",
+        )
+        .split("?")[0];
+
+    apiUrl =
+      new URL(API_BASE_URL);
+  } catch {
+    throw new Error(
+      "La configuración del entorno de pruebas no es válida.",
+    );
+  }
+
+  if (
+    nombreBase
+      !== "sigc_gas_test"
+  ) {
+    throw new Error(
+      "Prueba cancelada: las reglas de negocio solo pueden ejecutarse sobre la base sigc_gas_test.",
+    );
+  }
+
+  const ejecutandoEnCI =
+    process.env.CI === "true";
+
+  if (
+    !ejecutandoEnCI
+    && apiUrl.port === "5000"
+  ) {
+    throw new Error(
+      "Prueba cancelada: no se permite ejecutar las reglas de negocio contra el backend local del puerto 5000.",
+    );
+  }
+};
+
+  const solicitar = async (ruta, opciones = {}) => {
   const respuesta = await fetch(
     `${API_BASE_URL}${ruta}`,
     {
@@ -146,6 +196,7 @@ const verificarEstadoCilindro = async (
 };
 
 const ejecutarPruebas = async () => {
+  validarEntornoPruebas();
   console.log(
     "======================================================",
   );
@@ -292,6 +343,30 @@ const ejecutarPruebas = async () => {
       cilindroPrincipalId,
       "Prestado",
       "Estado después de Salida",
+    );
+
+        const desactivarConPrestamo =
+      await solicitar(
+        `/clientes/${clienteCreadoId}`,
+        {
+          method: "PUT",
+          headers: autorizacion,
+          body: JSON.stringify({
+            dni: dniTemporal,
+            nombre:
+              "Cliente reglas de negocio",
+            telefono:
+              "900000096",
+            estado:
+              "Inactivo",
+          }),
+        },
+      );
+
+    verificarEstadoHttp(
+      desactivarConPrestamo,
+      409,
+      "Desactivación con préstamo activo",
     );
 
     const segundaSalida =
@@ -446,6 +521,21 @@ const ejecutarPruebas = async () => {
       reactivarCliente,
       200,
       "Reactivación del cliente",
+    );
+
+    const eliminarClienteConHistorial =
+      await solicitar(
+        `/clientes/${clienteCreadoId}`,
+        {
+          method: "DELETE",
+          headers: autorizacion,
+        },
+      );
+
+    verificarEstadoHttp(
+      eliminarClienteConHistorial,
+      409,
+      "Eliminación de cliente con historial",
     );
 
     const crearCilindroConcurrencia =
