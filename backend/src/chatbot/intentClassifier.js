@@ -50,6 +50,34 @@ export const clasificarIntencion = (
     return "consultar_historial_cilindro";
   }
 
+    const esConsultaPrestamosAntiguos =
+  (
+    /\bprestamos?\b/.test(
+      mensaje,
+    )
+    || (
+      /\bcilindros?\b/.test(
+        mensaje,
+      )
+      && /\bprestados?\b/.test(
+        mensaje,
+      )
+    )
+  )
+  && coincideConAlguna(
+    mensaje,
+    [
+      /\bmas\s+de\s+\d{1,3}\s+dias?\b/,
+      /\b\d{1,3}\s+dias?\b/,
+      /\bdemasiado\s+tiempo\b/,
+      /\bmucho\s+tiempo\b/,
+    ],
+  );
+
+if (esConsultaPrestamosAntiguos) {
+  return "consultar_prestamos_antiguos";
+}
+
     const esConsultaPrestamosActivos =
     /\bprestamos?\s+activos?\b/.test(
       mensaje,

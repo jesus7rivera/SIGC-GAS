@@ -14,7 +14,7 @@
     "test:validation-api": "node src/scripts/validationApiTests.js",
     "test:business-rules-api": "node src/scripts/businessRulesApiTests.js",
     "test:chatbot-api": "node src/scripts/chatbotApiTests.js",
-    "test:chatbot-unit": "node --test src/chatbot/chatbotCore.test.js src/chatbot/entityExtractor.test.js src/services/chatbotService.test.js src/services/chatbotQueryService.test.js src/repositories/chatbotRepository.test.js src/services/chatbotApplicationService.test.js src/middleware/chatbotValidationMiddleware.test.js src/controllers/chatbotController.test.js src/chatbot/clientListing.test.js src/chatbot/activeLoans.test.js"
+    "test:chatbot-unit": "node --test src/chatbot/chatbotCore.test.js src/chatbot/entityExtractor.test.js src/services/chatbotService.test.js src/services/chatbotQueryService.test.js src/repositories/chatbotRepository.test.js src/services/chatbotApplicationService.test.js src/middleware/chatbotValidationMiddleware.test.js src/controllers/chatbotController.test.js src/chatbot/clientListing.test.js src/chatbot/activeLoans.test.js src/chatbot/overdueLoans.test.js"
   },
   "keywords": [],
   "author": "",
