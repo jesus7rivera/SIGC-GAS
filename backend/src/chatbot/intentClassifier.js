@@ -131,6 +131,33 @@ if (esConsultaPrestamosAntiguos) {
     return "buscar_cilindro_codigo";
   }
 
+  const esConsultaClientesSinActividad =
+  /\bclientes?\b/.test(
+    mensaje,
+  )
+  && coincideConAlguna(
+    mensaje,
+    [
+      /\bsin\s+actividad\b/,
+      /\bsin\s+movimientos?\b/,
+    ],
+  )
+  && coincideConAlguna(
+    mensaje,
+    [
+      /\bmas\s+de\s+\d{1,3}\s+dias?\b/,
+      /\b\d{1,3}\s+dias?\b/,
+      /\bdemasiado\s+tiempo\b/,
+      /\bmucho\s+tiempo\b/,
+    ],
+  );
+
+if (
+  esConsultaClientesSinActividad
+) {
+  return "consultar_clientes_sin_actividad";
+}
+
     const esListadoClientes =
     /\bclientes?\b/.test(mensaje)
     && coincideConAlguna(
