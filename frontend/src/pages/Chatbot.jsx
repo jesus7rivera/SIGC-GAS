@@ -24,9 +24,11 @@ import {
 const LIMITE_MENSAJE = 300;
 
 const SUGERENCIAS = [
-  "¿Cuántos cilindros están disponibles?",
+  "¿Quién tiene los cilindros prestados?",
+  "Muéstrame los préstamos de más de 30 días",
+  "¿Qué clientes llevan más de 30 días sin actividad?",
+  "Dame un resumen de riesgos",
   "Muéstrame los últimos 5 movimientos",
-  "¿Cuántos clientes están activos?",
   "Dame un resumen del sistema",
 ];
 
@@ -119,30 +121,45 @@ const formatearFechaChatbot = (
   ).format(fecha);
 };
 
-const esRespuestaPrestamosActivos = (
+const esRespuestaPrestamos = (
   mensaje,
 ) => (
   mensaje.autor === "asistente"
-  && mensaje.intencion
-    === "consultar_prestamos_activos"
+  && (
+    mensaje.intencion
+      === "consultar_prestamos_activos"
+    || mensaje.intencion
+      === "consultar_prestamos_antiguos"
+  )
   && Array.isArray(
     mensaje.datos,
   )
 );
 
-const renderizarPrestamosActivos = (
+const renderizarPrestamos = (
   mensaje,
 ) => {
   const prestamos =
     mensaje.datos;
+    const esSeguimiento =
+  mensaje.intencion
+    === "consultar_prestamos_antiguos";
 
   return (
     <>
       <p className="chatbot-result-title">
-        {prestamos.length === 1
-          ? "1 préstamo activo"
-          : `${prestamos.length} préstamos activos`}
-      </p>
+  {esSeguimiento
+    ? (
+      prestamos.length === 1
+        ? "1 préstamo para seguimiento"
+        : `${prestamos.length} préstamos para seguimiento`
+    )
+    : (
+      prestamos.length === 1
+        ? "1 préstamo activo"
+        : `${prestamos.length} préstamos activos`
+    )}
+</p>
 
       <div className="chatbot-loan-list">
         {prestamos.map(
@@ -175,10 +192,11 @@ const renderizarPrestamosActivos = (
                     }`
                   }
                 >
-                  {prestamo
-                    .requiereRevision
-                    ? "Revisar"
-                    : "Prestado"}
+                  {prestamo.requiereRevision
+  ? "Revisar"
+  : esSeguimiento
+    ? "Seguimiento"
+    : "Prestado"}
                 </span>
               </div>
 
@@ -237,6 +255,182 @@ const renderizarPrestamosActivos = (
             </div>
           ),
         )}
+      </div>
+    </>
+  );
+};
+const esRespuestaClientesSinActividad = (
+  mensaje,
+) => (
+  mensaje.autor === "asistente"
+  && mensaje.intencion
+    === "consultar_clientes_sin_actividad"
+  && Array.isArray(
+    mensaje.datos,
+  )
+);
+const esRespuestaResumenRiesgo = (
+  mensaje,
+) => (
+  mensaje.autor === "asistente"
+  && mensaje.intencion
+    === "consultar_resumen_riesgo"
+  && mensaje.datos
+  && typeof mensaje.datos === "object"
+  && Array.isArray(
+    mensaje.datos.prestamosProlongados,
+  )
+  && Array.isArray(
+    mensaje.datos.clientesSinActividad,
+  )
+);
+
+const renderizarClientesSinActividad = (
+  mensaje,
+) => {
+  const clientes =
+    mensaje.datos;
+
+  return (
+    <>
+      <p className="chatbot-result-title">
+        {clientes.length === 1
+          ? "1 cliente para seguimiento"
+          : `${clientes.length} clientes para seguimiento`}
+      </p>
+
+      <div className="chatbot-client-list">
+        {clientes.map(
+          (cliente) => (
+            <div
+              key={
+                `${cliente.nombre}-`
+                + `${cliente.fechaRegistro ?? ""}`
+              }
+              className="chatbot-client-card"
+            >
+              <div className="chatbot-client-header">
+                <strong>
+                  {cliente.nombre}
+                </strong>
+
+                <span className="chatbot-client-status">
+                  {cliente.sinMovimientos
+                    ? "Sin movimientos"
+                    : "Sin actividad"}
+                </span>
+              </div>
+
+              <div className="chatbot-client-days">
+                <strong>
+                  {cliente.diasSinActividad}
+                </strong>
+
+                <span>
+                  {cliente.diasSinActividad === 1
+                    ? "día sin actividad"
+                    : "días sin actividad"}
+                </span>
+              </div>
+
+              <div className="chatbot-client-details">
+                {cliente.sinMovimientos
+                  ? (
+                    <div>
+                      <span>
+                        Registrado
+                      </span>
+
+                      <strong>
+                        {formatearFechaChatbot(
+                          cliente.fechaRegistro,
+                        )}
+                      </strong>
+                    </div>
+                  )
+                  : (
+                    <div>
+                      <span>
+                        Última actividad
+                      </span>
+
+                      <strong>
+                        {formatearFechaChatbot(
+                          cliente.ultimaActividad,
+                        )}
+                      </strong>
+                    </div>
+                  )}
+              </div>
+            </div>
+          ),
+        )}
+      </div>
+    </>
+  );
+};
+const renderizarResumenRiesgo = (
+  mensaje,
+) => {
+  const {
+    diasMinimos,
+    prestamosProlongados,
+    clientesSinActividad,
+    totalSituaciones,
+  } = mensaje.datos;
+
+  return (
+    <>
+      <p className="chatbot-result-title">
+        Resumen de seguimiento
+      </p>
+
+      <div className="chatbot-risk-summary">
+        <div className="chatbot-risk-card">
+          <span>
+            Préstamos prolongados
+          </span>
+
+          <strong>
+            {prestamosProlongados.length}
+          </strong>
+
+          <small>
+            Más de {diasMinimos} días
+          </small>
+        </div>
+
+        <div className="chatbot-risk-card">
+          <span>
+            Clientes sin actividad
+          </span>
+
+          <strong>
+            {clientesSinActividad.length}
+          </strong>
+
+          <small>
+            Más de {diasMinimos} días
+          </small>
+        </div>
+      </div>
+
+      <div
+        className={
+          totalSituaciones > 0
+            ? "chatbot-risk-total chatbot-risk-total-warning"
+            : "chatbot-risk-total"
+        }
+      >
+        <strong>
+          {totalSituaciones}
+        </strong>
+
+        <span>
+          {totalSituaciones === 1
+            ? "situación requiere revisión operativa"
+            : "situaciones requieren revisión operativa"}
+        </span>
       </div>
     </>
   );
@@ -526,17 +720,37 @@ function Chatbot({
                   }`
                 }
               >
-                {esRespuestaPrestamosActivos(
+                {esRespuestaPrestamos(
+  mensaje,
+) && renderizarPrestamos(
+  mensaje,
+)}
+
+{esRespuestaClientesSinActividad(
+  mensaje,
+) && renderizarClientesSinActividad(
+  mensaje,
+)}
+
+{esRespuestaResumenRiesgo(
+  mensaje,
+) && renderizarResumenRiesgo(
+  mensaje,
+)}
+
+{!esRespuestaPrestamos(
   mensaje,
 )
-  ? renderizarPrestamosActivos(
+  && !esRespuestaClientesSinActividad(
     mensaje,
   )
-  : (
-    <p>
-      {mensaje.contenido}
-    </p>
-  )}
+  && !esRespuestaResumenRiesgo(
+    mensaje,
+  ) && (
+  <p>
+    {mensaje.contenido}
+  </p>
+)}
 
                 {mensaje.datos
                   !== null
