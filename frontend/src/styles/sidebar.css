@@ -10,29 +10,50 @@
 
 .brand {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 30px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  margin-bottom: 24px;
 }
 
-.brand-icon {
-  width: 45px;
-  height: 45px;
-  background: var(--primary);
-  border-radius: 12px;
+.brand-logo-container {
+  width: 100%;
+  min-height: 92px;
+  padding: 4px 0 2px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-weight: bold;
+  justify-content: center;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  max-width: 205px;
+  height: auto;
+  object-fit: contain;
+  filter:
+    drop-shadow(
+      0 4px 8px
+      rgba(0, 0, 0, 0.28)
+    );
+}
+
+.brand-system {
+  text-align: center;
+  padding: 2px 4px 0;
 }
 
 .brand h2 {
-  font-size: 20px;
+  margin-bottom: 3px;
+  font-size: 19px;
+  letter-spacing: 0.4px;
 }
 
 .brand span {
-  font-size: 12px;
+  display: block;
   color: #cbd5e1;
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .user-info {
@@ -47,8 +68,8 @@
   width: 55px;
   height: 55px;
   margin: 0 auto 10px;
-  background: rgba(37, 99, 235, 0.25);
-  color: #93c5fd;
+  background: rgba(215, 38, 46, 0.18);
+  color: #fca5a5;
   border-radius: 50%;
   display: flex;
   justify-content: center;

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUsuario } from "../services/authService";
 import { useAuth } from "../hooks/useAuth";
+import corsursaLogo
+  from "../assets/corsursa-logo.png";
 
 function Login() {
   const [correo, setCorreo] = useState("");
@@ -29,45 +31,97 @@ function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>SIGC-GAS</h1>
-        <p>Sistema de Gestión de Cilindros de Gas</p>
+  <main className="login-container">
+    <section className="login-card">
+      <div className="login-brand">
+        <img
+          src={corsursaLogo}
+          alt="CORSURSA - Soldadura y Gases"
+          className="login-brand-logo"
+        />
 
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
+        <div className="login-brand-divider" />
 
-        <form onSubmit={manejarLogin}>
-          <div className="form-group">
-            <label>Correo electrónico</label>
-            <input
-              type="email"
-              placeholder="admin@sigcgas.com"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-            />
-          </div>
+        <span className="login-company-label">
+          Sistema corporativo
+        </span>
 
-          <div className="form-group">
-            <label>Contraseña</label>
-            <input
-              type="password"
-              placeholder="********"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+        <h1>
+          SIGC-GAS
+        </h1>
 
-          <button className="btn-primary login-button" type="submit">
-            Iniciar Sesión
-          </button>
-        </form>
+        <p className="login-system-description">
+          Sistema de Gestión y Control
+          de Cilindros
+        </p>
       </div>
-    </div>
-  );
+
+      <div className="login-access-header">
+        <h2>
+          Iniciar sesión
+        </h2>
+
+        <p>
+          Ingresa tus credenciales para
+          acceder al sistema.
+        </p>
+      </div>
+
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={manejarLogin}>
+        <div className="form-group">
+          <label htmlFor="correo">
+            Correo electrónico
+          </label>
+
+          <input
+            id="correo"
+            type="email"
+            placeholder="correo@corsursa.com"
+            value={correo}
+            onChange={(e) =>
+              setCorreo(e.target.value)
+            }
+            autoComplete="username"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">
+            Contraseña
+          </label>
+
+          <input
+            id="password"
+            type="password"
+            placeholder="Ingresa tu contraseña"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+            autoComplete="current-password"
+          />
+        </div>
+
+        <button
+          className="btn-primary login-button"
+          type="submit"
+        >
+          Iniciar sesión
+        </button>
+      </form>
+
+      <p className="login-footer">
+        CORSURSA · Soldadura y Gases
+      </p>
+    </section>
+  </main>
+);
 }
 
 export default Login;

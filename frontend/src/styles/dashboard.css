@@ -65,3 +65,29 @@
 .chart-card h2 {
   margin-bottom: 20px;
 }
+
+.dashboard-brand-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-brand-header > span {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+}
+
+.dashboard-brand-header h1 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 28px;
+}
+
+.dashboard-brand-header p {
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 13px;
+}

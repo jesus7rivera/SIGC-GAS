@@ -55,9 +55,9 @@ const crearMensaje = (
 const crearBienvenida = () =>
   crearMensaje(
     "asistente",
-    "Hola. Soy el asistente de SIGC-GAS. "
-      + "Puedo consultar cilindros, clientes, "
-      + "movimientos e historiales.",
+    "Hola. Soy el asistente de SIGC-GAS para CORSURSA. "
+  + "Puedo consultar cilindros, clientes, "
+  + "movimientos e información de seguimiento.",
     {
       intencion: "saludo",
       datos: null,
@@ -615,7 +615,7 @@ function Chatbot({
             </h1>
 
             <p>
-              Consultas seguras y de
+              CORSURSA . Consultas de
               solo lectura
             </p>
           </div>
