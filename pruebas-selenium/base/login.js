@@ -20,7 +20,7 @@ export const iniciarSesion = async (
   await inputPassword.sendKeys(password);
 
   const botonLogin = await driver.findElement(
-    By.xpath("//button[contains(text(),'Iniciar Sesión')]")
+    By.css("button[type='submit']")
   );
 
   await botonLogin.click();

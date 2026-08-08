@@ -34,7 +34,7 @@ function ChatbotWidget() {
         hidden={!abierto}
         role="dialog"
         aria-label={
-          "Asistente SIGC-GAS"
+          "Asistente SIGC-GAS de CORSURSA"
         }
       >
         <Chatbot
@@ -62,7 +62,7 @@ function ChatbotWidget() {
         title={
           abierto
             ? "Cerrar asistente"
-            : "Abrir asistente SIGC-GAS"
+            : "Abrir asistente SIGC-GAS de CORSURSA"
         }
       >
         {abierto

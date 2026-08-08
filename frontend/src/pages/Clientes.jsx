@@ -89,15 +89,40 @@ const clientesFiltrados = clientes.filter((cliente) => {
 const generarReportePDF = () => {
   const doc = new jsPDF();
 
-  doc.setFontSize(16);
-  doc.text("SIGC-GAS", 14, 15);
+  doc.setTextColor(215, 38, 46);
+doc.setFontSize(17);
+doc.text("CORSURSA", 14, 15);
 
-  doc.setFontSize(12);
-  doc.text("Reporte de Clientes", 14, 25);
-  doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 32);
+doc.setTextColor(32, 34, 38);
+doc.setFontSize(10);
+doc.text(
+  "SIGC-GAS - Sistema de Gestión y Control de Cilindros",
+  14,
+  22,
+);
 
-  const columnas = ["DNI", "Nombre", "Teléfono", "Estado"];
+doc.setFontSize(13);
+doc.text(
+  "Reporte de Clientes",
+  14,
+  31,
+);
 
+doc.setTextColor(107, 114, 128);
+doc.setFontSize(9);
+doc.text(
+  `Fecha: ${new Date().toLocaleDateString("es-PE")}`,
+  14,
+  37,
+);
+
+doc.setTextColor(32, 34, 38);
+const columnas = [
+  "DNI",
+  "Nombre",
+  "Teléfono",
+  "Estado",
+];
   const filas = clientesFiltrados.map((cliente) => [
     cliente.dni,
     cliente.nombre,
@@ -106,11 +131,14 @@ const generarReportePDF = () => {
   ]);
 
   autoTable(doc, {
-    head: [columnas],
-    body: filas,
-    startY: 40
-  });
-
+  head: [columnas],
+  body: filas,
+  startY: 44,
+  headStyles: {
+    fillColor: [215, 38, 46],
+    textColor: [255, 255, 255],
+  },
+});
   doc.save("reporte_clientes.pdf");
 };
 

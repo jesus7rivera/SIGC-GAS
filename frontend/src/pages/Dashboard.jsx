@@ -37,7 +37,20 @@ function Dashboard() {
 
   return (
     <div>
-      <h1>Dashboard SIGC-GAS</h1>
+      <div className="dashboard-brand-header">
+  <span>
+    CORSURSA
+  </span>
+
+  <h1>
+    Panel de Control SIGC-GAS
+  </h1>
+
+  <p>
+    Sistema de Gestión y Control
+    de Cilindros
+  </p>
+</div>
 
       <div className="stats-container">
   <StatCard

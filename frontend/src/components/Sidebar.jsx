@@ -12,6 +12,9 @@ import {
   FaUserShield,
 } from "react-icons/fa";
 
+import corsursaLogo
+  from "../assets/corsursa-logo.png";
+
 import {
   useAuth,
 } from "../hooks/useAuth";
@@ -33,18 +36,25 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-icon">
-          SG
-        </div>
+  <div className="brand-logo-container">
+    <img
+      src={corsursaLogo}
+      alt="CORSURSA - Soldadura y Gases"
+      className="brand-logo"
+    />
+  </div>
 
-        <div>
-          <h2>SIGC-GAS</h2>
+  <div className="brand-system">
+    <h2>
+      SIGC-GAS
+    </h2>
 
-          <span>
-            Control de cilindros
-          </span>
-        </div>
-      </div>
+    <span>
+      Sistema de Gestión y Control
+      de Cilindros
+    </span>
+  </div>
+</div>
 
       <div className="user-info">
         <div className="user-avatar">

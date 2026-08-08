@@ -36,6 +36,29 @@ const seleccionarPorTexto = async (
     `No se encontró la opción: ${texto}`,
   );
 };
+const seleccionarPrimeraOpcionValida = async (
+  selectElement,
+) => {
+  const opciones =
+    await selectElement.findElements(
+      By.css("option"),
+    );
+
+  for (const opcion of opciones) {
+    const valor =
+      await opcion.getAttribute("value");
+
+    if (valor?.trim()) {
+      await opcion.click();
+      return;
+    }
+  }
+
+  throw new Error(
+    "No existe ningún cliente disponible "
+      + "para seleccionar.",
+  );
+};
 
 const verificarOpcionDisponible = async (
   selectElement,
@@ -135,10 +158,9 @@ const registrarMovimiento = async (
       By.id("movimiento-tipo"),
     );
 
-  await seleccionarPorTexto(
-    selectCliente,
-    "Cliente Selenium",
-  );
+  await seleccionarPrimeraOpcionValida(
+  selectCliente,
+);
 
   await seleccionarPorTexto(
     selectCilindro,

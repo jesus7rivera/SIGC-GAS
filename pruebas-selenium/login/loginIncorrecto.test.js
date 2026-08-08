@@ -25,7 +25,7 @@ async function loginIncorrectoTest() {
     await inputPassword.sendKeys("claveIncorrecta");
 
     const botonLogin = await driver.findElement(
-      By.xpath("//button[contains(text(),'Iniciar Sesión')]")
+      By.css("button[type='submit']")
     );
 
     await botonLogin.click();
