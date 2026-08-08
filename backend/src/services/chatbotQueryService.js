@@ -803,6 +803,33 @@ const ejecutarPrestamosActivos =
       datos: prestamos,
     };
   };
+  const obtenerPrestamosAntiguos =
+  async (
+    repositorio,
+    diasMinimos,
+    ahora,
+  ) => {
+    const resultados =
+      await repositorio
+        .listarPrestamosActivosParaSeguimiento();
+
+    return resultados
+      .map(
+        (prestamo) =>
+          formatearPrestamoActivo(
+            prestamo,
+            ahora,
+          ),
+      )
+      .filter(
+        (prestamo) =>
+          Number.isInteger(
+            prestamo.diasPrestado,
+          )
+          && prestamo.diasPrestado
+            > diasMinimos,
+      );
+  };
 
   const ejecutarPrestamosAntiguos =
   async (
@@ -818,27 +845,12 @@ const ejecutarPrestamosActivos =
         ? parametros.diasMinimos
         : 30;
 
-    const resultados =
-      await repositorio
-        .listarPrestamosActivosParaSeguimiento();
-
     const prestamos =
-      resultados
-        .map(
-          (prestamo) =>
-            formatearPrestamoActivo(
-              prestamo,
-              ahora,
-            ),
-        )
-        .filter(
-          (prestamo) =>
-            Number.isInteger(
-              prestamo.diasPrestado,
-            )
-            && prestamo.diasPrestado
-              > diasMinimos,
-        );
+  await obtenerPrestamosAntiguos(
+    repositorio,
+    diasMinimos,
+    ahora,
+  );
 
     const {
       elementos,
@@ -898,6 +910,83 @@ const ejecutarPrestamosActivos =
         elementos,
     };
   };
+  const obtenerClientesSinActividad =
+  async (
+    repositorio,
+    diasMinimos,
+    ahora,
+  ) => {
+    const resultados =
+      await repositorio
+        .listarClientesActivosParaSeguimiento();
+
+    return resultados
+      .map(
+        ({
+          cliente,
+          ultimoMovimiento,
+        }) => {
+          const sinMovimientos =
+            !ultimoMovimiento;
+
+          const fechaReferencia =
+            ultimoMovimiento?.fecha
+            ?? cliente?.createdAt;
+
+          const fecha =
+            new Date(
+              fechaReferencia,
+            );
+
+          if (
+            Number.isNaN(
+              fecha.getTime(),
+            )
+          ) {
+            return null;
+          }
+
+          const diferencia =
+            ahora.getTime()
+            - fecha.getTime();
+
+          if (diferencia < 0) {
+            return null;
+          }
+
+          const diasSinActividad =
+            Math.floor(
+              diferencia
+              / (
+                1000
+                * 60
+                * 60
+                * 24
+              ),
+            );
+
+          return {
+            nombre:
+              cliente.nombre,
+            ultimaActividad:
+              ultimoMovimiento?.fecha
+              ?? null,
+            fechaRegistro:
+              cliente.createdAt
+              ?? null,
+            diasSinActividad,
+            sinMovimientos,
+          };
+        },
+      )
+      .filter(
+        (cliente) =>
+          cliente !== null
+          && cliente
+            .diasSinActividad
+            > diasMinimos,
+      );
+  };
 
   const ejecutarClientesSinActividad =
   async (
@@ -913,78 +1002,12 @@ const ejecutarPrestamosActivos =
         ? parametros.diasMinimos
         : 30;
 
-    const resultados =
-      await repositorio
-        .listarClientesActivosParaSeguimiento();
-
     const clientes =
-      resultados
-        .map(
-          ({
-            cliente,
-            ultimoMovimiento,
-          }) => {
-            const sinMovimientos =
-              !ultimoMovimiento;
-
-            const fechaReferencia =
-              ultimoMovimiento?.fecha
-              ?? cliente?.createdAt;
-
-            const fecha =
-              new Date(
-                fechaReferencia,
-              );
-
-            if (
-              Number.isNaN(
-                fecha.getTime(),
-              )
-            ) {
-              return null;
-            }
-
-            const diferencia =
-              ahora.getTime()
-              - fecha.getTime();
-
-            if (diferencia < 0) {
-              return null;
-            }
-
-            const diasSinActividad =
-              Math.floor(
-                diferencia
-                / (
-                  1000
-                  * 60
-                  * 60
-                  * 24
-                ),
-              );
-
-            return {
-              nombre:
-                cliente.nombre,
-              ultimaActividad:
-                ultimoMovimiento?.fecha
-                ?? null,
-              fechaRegistro:
-                cliente.createdAt
-                ?? null,
-              diasSinActividad,
-              sinMovimientos,
-            };
-          },
-        )
-        .filter(
-          (cliente) =>
-            cliente !== null
-            && cliente
-              .diasSinActividad
-              > diasMinimos,
-        );
-
+  await obtenerClientesSinActividad(
+    repositorio,
+    diasMinimos,
+    ahora,
+  );
     const {
       elementos,
       hayMas,
@@ -1045,6 +1068,69 @@ return {
 };
   };
 
+  const ejecutarResumenRiesgo =
+  async (
+    repositorio,
+    ahora,
+  ) => {
+    const diasMinimos = 30;
+
+    const [
+  prestamosProlongados,
+  clientesSinActividad,
+] =
+  await Promise.all([
+    obtenerPrestamosAntiguos(
+      repositorio,
+      diasMinimos,
+      ahora,
+    ),
+    obtenerClientesSinActividad(
+      repositorio,
+      diasMinimos,
+      ahora,
+    ),
+  ]);
+
+    const totalSituaciones =
+      prestamosProlongados.length
+      + clientesSinActividad.length;
+
+    if (totalSituaciones === 0) {
+      return {
+        respuesta:
+          "No se detectaron préstamos prolongados "
+          + "ni clientes con más de 30 días "
+          + "sin actividad.",
+        datos: {
+          diasMinimos,
+          prestamosProlongados: [],
+          clientesSinActividad: [],
+          totalSituaciones: 0,
+        },
+      };
+    }
+
+    const textoSituaciones =
+      totalSituaciones === 1
+        ? "1 situación requiere"
+        : `${totalSituaciones} situaciones requieren`;
+
+    return {
+      respuesta:
+        "Resumen de seguimiento del negocio:\n"
+        + `Préstamos prolongados: ${prestamosProlongados.length}\n`
+        + `Clientes sin actividad: ${clientesSinActividad.length}\n`
+        + `${textoSituaciones} revisión operativa.`,
+      datos: {
+        diasMinimos,
+        prestamosProlongados,
+        clientesSinActividad,
+        totalSituaciones,
+      },
+    };
+  };
+
   export const ejecutarConsultaChatbot =
   async (
     solicitud,
@@ -1071,6 +1157,11 @@ return {
         return ejecutarResumen(
           repositorio,
         );
+      case "consultar_resumen_riesgo":
+        return ejecutarResumenRiesgo(
+         repositorio,
+         ahora,
+  );
 
       case "consultar_prestamos_activos":
         return ejecutarPrestamosActivos(

@@ -294,7 +294,20 @@ if (
   if (esConteoClientes) {
     return "contar_clientes_estado";
   }
+const esResumenRiesgo =
+  coincideConAlguna(
+    mensaje,
+    [
+      /\bresumen\b.*\briesgos?\b/,
+      /\briesgos?\b.*\bnegocio\b/,
+      /\bsituaciones?\b.*\brequieren?\s+revision\b/,
+      /\bproblemas?\s+importantes?\b/,
+    ],
+  );
 
+if (esResumenRiesgo) {
+  return "consultar_resumen_riesgo";
+}
   const esResumen =
     coincideConAlguna(
       mensaje,
