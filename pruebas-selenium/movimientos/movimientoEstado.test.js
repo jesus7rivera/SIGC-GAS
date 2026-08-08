@@ -81,11 +81,9 @@ async function movimientoEstadoTest() {
 
     let selects = await driver.findElements(By.css(".modal select"));
 
-    await seleccionarPorTexto(
-      driver,
-      selects[0],
-      "Cliente Selenium"
-    );
+    await seleccionarPrimeraOpcionValida(
+  selects[0]
+);
     await seleccionarPorTexto(driver, selects[1], codigo);
     await seleccionarPorTexto(driver, selects[2], "Salida");
 
@@ -126,11 +124,9 @@ async function movimientoEstadoTest() {
 
     selects = await driver.findElements(By.css(".modal select"));
 
-    await seleccionarPorTexto(
-      driver,
-      selects[0],
-      "Cliente Selenium"
-    );
+    await seleccionarPrimeraOpcionValida(
+  selects[0]
+);
     await seleccionarPorTexto(driver, selects[1], codigo);
     await seleccionarPorTexto(driver, selects[2], "Devolución");
 
