@@ -93,6 +93,18 @@ function Sidebar() {
             </NavLink>
           </li>
         )}
+        {usuario?.rol
+  === "Administrador" && (
+  <li>
+    <NavLink to="/usuarios">
+      <FaUserShield />
+
+      <span>
+        Usuarios
+      </span>
+    </NavLink>
+  </li>
+)}
 
         <li>
           <NavLink to="/cilindros">

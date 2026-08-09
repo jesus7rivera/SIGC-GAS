@@ -11,6 +11,7 @@
     "lint": "eslint src",
     "seed:test": "node src/scripts/seedTestData.js",
     "test:security-api": "node src/scripts/securityApiTests.js",
+    "test:usuarios-seguridad-api": "node src/scripts/usuarioSeguridadApiTests.js",
     "test:validation-api": "node src/scripts/validationApiTests.js",
     "test:business-rules-api": "node src/scripts/businessRulesApiTests.js",
     "test:chatbot-api": "node src/scripts/chatbotApiTests.js",
