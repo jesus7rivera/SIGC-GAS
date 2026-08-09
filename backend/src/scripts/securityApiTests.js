@@ -1,6 +1,65 @@
+import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
+
+import Usuario from "../models/usuario.js";
+
 const API_BASE_URL =
-  process.env.API_BASE_URL ??
-  "http://127.0.0.1:5000/api";
+  process.env.API_BASE_URL
+  ?? (
+    process.env.CI === "true"
+      ? "http://127.0.0.1:5000/api"
+      : "http://127.0.0.1:5001/api"
+  );
+
+const MONGO_URI =
+  process.env.MONGO_URI
+  ?? "mongodb://127.0.0.1:27017/sigc_gas_test";
+
+const validarEntornoPruebas = () => {
+  let nombreBase;
+  let apiUrl;
+
+  try {
+    const uri = new URL(MONGO_URI);
+
+    nombreBase = uri.pathname
+      .replace(/^\//, "")
+      .split("?")[0];
+
+    apiUrl = new URL(API_BASE_URL);
+  } catch {
+    throw new Error(
+      "La configuración del entorno "
+        + "de pruebas no es válida.",
+    );
+  }
+
+  if (
+    nombreBase !== "sigc_gas_test"
+  ) {
+    throw new Error(
+      "Prueba cancelada: las pruebas "
+        + "de seguridad solo pueden "
+        + "ejecutarse sobre "
+        + "sigc_gas_test.",
+    );
+  }
+
+  const ejecutandoEnCI =
+    process.env.CI === "true";
+
+  if (
+    !ejecutandoEnCI
+    && apiUrl.port === "5000"
+  ) {
+    throw new Error(
+      "Prueba cancelada: no se permite "
+        + "ejecutar las pruebas de "
+        + "seguridad contra el backend "
+        + "local del puerto 5000.",
+    );
+  }
+};
 
 const solicitar = async (ruta, opciones = {}) => {
   const respuesta = await fetch(
@@ -97,12 +156,279 @@ const ejecutarPruebas = async () => {
     "======================================================",
   );
 
-  let tokenAdministrador = null;
+  validarEntornoPruebas();
+   let tokenAdministrador = null;
   let clienteCreadoId = null;
+
+  let usuarioBloqueoId;
+
+const correoBloqueo =
+  `bloqueo-${Date.now()}@sigcgas.test`;
+
+const passwordCorrecto =
+  "Bloqueo123";
+
+const passwordIncorrecto =
+  "Incorrecta123";
 
   const identificador = Date.now().toString().slice(-8);
 
-  try {
+ try {
+
+await mongoose.connect(
+  MONGO_URI,
+);
+const passwordHash = await bcrypt.hash(
+  passwordCorrecto,
+  10,
+);
+
+
+const usuarioBloqueo =
+  await Usuario.create({
+    nombre: "Usuario Bloqueo API",
+    correo: correoBloqueo,
+    password: passwordHash,
+    rol: "Operador",
+  });
+
+usuarioBloqueoId =
+  usuarioBloqueo._id;
+
+console.log(
+  "✓ Usuario temporal creado "
+    + "para prueba de bloqueo.",
+);
+
+for (let intento = 1; intento <= 2; intento += 1) {
+  const resultado = await solicitar(
+    "/auth/login",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        correo: correoBloqueo,
+        password: passwordIncorrecto,
+      }),
+    },
+  );
+
+  verificarEstado(
+    resultado,
+    401,
+    `Intento incorrecto ${intento} antes del reinicio`,
+  );
+}
+
+let usuarioActualizado =
+  await Usuario.findById(
+    usuarioBloqueoId,
+  );
+
+if (
+  usuarioActualizado.intentosFallidos !== 2
+) {
+  throw new Error(
+    "El contador de intentos fallidos "
+      + "debería ser 2.",
+  );
+}
+
+const loginReinicio = await solicitar(
+  "/auth/login",
+  {
+    method: "POST",
+    body: JSON.stringify({
+      correo: correoBloqueo,
+      password: passwordCorrecto,
+    }),
+  },
+);
+
+verificarEstado(
+  loginReinicio,
+  200,
+  "Login correcto reinicia intentos fallidos",
+);
+
+usuarioActualizado =
+  await Usuario.findById(
+    usuarioBloqueoId,
+  );
+
+if (
+  usuarioActualizado.intentosFallidos !== 0
+  || usuarioActualizado.bloqueadoHasta
+) {
+  throw new Error(
+    "El login correcto no reinició "
+      + "el estado de seguridad.",
+  );
+}
+
+console.log(
+  "✓ El login correcto reinició "
+    + "el contador de intentos.",
+);
+
+for (
+  let intento = 1;
+  intento <= 4;
+  intento += 1
+) {
+  const resultado = await solicitar(
+    "/auth/login",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        correo: correoBloqueo,
+        password: passwordIncorrecto,
+      }),
+    },
+  );
+
+  verificarEstado(
+    resultado,
+    401,
+    `Intento incorrecto ${intento} de 5`,
+  );
+}
+
+const quintoIntento = await solicitar(
+  "/auth/login",
+  {
+    method: "POST",
+    body: JSON.stringify({
+      correo: correoBloqueo,
+      password: passwordIncorrecto,
+    }),
+  },
+);
+
+verificarEstado(
+  quintoIntento,
+  429,
+  "Quinto intento activa el bloqueo",
+);
+
+usuarioActualizado =
+  await Usuario.findById(
+    usuarioBloqueoId,
+  );
+
+if (
+  usuarioActualizado.intentosFallidos !== 5
+) {
+  throw new Error(
+    "Después del quinto intento "
+      + "el contador debería ser 5.",
+  );
+}
+
+if (!usuarioActualizado.bloqueadoHasta) {
+  throw new Error(
+    "El usuario debería tener "
+      + "una fecha de bloqueo.",
+  );
+}
+
+const tiempoRestante =
+  usuarioActualizado.bloqueadoHasta.getTime()
+  - Date.now();
+
+if (
+  tiempoRestante <= 4 * 60 * 1000
+  || tiempoRestante > 5 * 60 * 1000
+) {
+  throw new Error(
+    "La duración del bloqueo no "
+      + "corresponde aproximadamente "
+      + "a 5 minutos.",
+  );
+}
+
+console.log(
+  "✓ El quinto intento bloqueó "
+    + "temporalmente la cuenta.",
+);
+
+console.log(
+  "✓ Bloqueo de aproximadamente "
+    + "5 minutos registrado correctamente.",
+);
+
+const loginDuranteBloqueo =
+  await solicitar(
+    "/auth/login",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        correo: correoBloqueo,
+        password: passwordCorrecto,
+      }),
+    },
+  );
+
+verificarEstado(
+  loginDuranteBloqueo,
+  429,
+  "Login correcto durante bloqueo",
+);
+
+console.log(
+  "✓ La cuenta bloqueada rechazó "
+    + "el acceso incluso con la "
+    + "contraseña correcta.",
+);
+
+await Usuario.updateOne(
+  {
+    _id: usuarioBloqueoId,
+  },
+  {
+    $set: {
+      bloqueadoHasta:
+        new Date(Date.now() - 1000),
+    },
+  },
+);
+
+const loginDespuesBloqueo =
+  await solicitar(
+    "/auth/login",
+    {
+      method: "POST",
+      body: JSON.stringify({
+        correo: correoBloqueo,
+        password: passwordCorrecto,
+      }),
+    },
+  );
+
+verificarEstado(
+  loginDespuesBloqueo,
+  200,
+  "Login después de vencer el bloqueo",
+);
+
+usuarioActualizado =
+  await Usuario.findById(
+    usuarioBloqueoId,
+  );
+
+if (
+  usuarioActualizado.intentosFallidos !== 0
+  || usuarioActualizado.bloqueadoHasta
+) {
+  throw new Error(
+    "El estado de bloqueo no se limpió "
+      + "después de autenticarse correctamente.",
+  );
+}
+
+console.log(
+  "✓ La cuenta volvió a habilitarse "
+    + "después de vencer el bloqueo.",
+);
     const dashboardSinToken = await solicitar(
       "/dashboard",
     );
@@ -289,6 +615,27 @@ const ejecutarPruebas = async () => {
         );
       }
     }
+    if (usuarioBloqueoId) {
+  await Usuario.deleteOne({
+    _id: usuarioBloqueoId,
+  });
+
+  console.log(
+    "✓ Usuario temporal de bloqueo "
+      + "eliminado correctamente.",
+  );
+}
+
+if (
+  mongoose.connection.readyState !== 0
+) {
+  await mongoose.disconnect();
+
+  console.log(
+    "✓ Conexión de pruebas "
+      + "cerrada correctamente.",
+  );
+}
   }
 };
 

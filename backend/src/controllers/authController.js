@@ -3,6 +3,11 @@ import jwt from "jsonwebtoken";
 
 import Usuario from "../models/usuario.js";
 
+const MAX_INTENTOS_FALLIDOS = 5;
+
+const DURACION_BLOQUEO_MS =
+  5 * 60 * 1000;
+
 export const registrarUsuario = async (
   req,
   res,
@@ -67,15 +72,72 @@ export const login = async (
       });
     }
 
+    const ahora = new Date();
+
+    if (
+      usuario.bloqueadoHasta
+      && usuario.bloqueadoHasta > ahora
+    ) {
+      return res.status(429).json({
+        mensaje:
+          "Cuenta bloqueada temporalmente "
+          + "por demasiados intentos fallidos. "
+          + "Intente nuevamente más tarde.",
+      });
+    }
+
+    if (
+      usuario.bloqueadoHasta
+      && usuario.bloqueadoHasta <= ahora
+    ) {
+      usuario.intentosFallidos = 0;
+      usuario.bloqueadoHasta = null;
+
+      await usuario.save();
+    }
+
     const coincide = await bcrypt.compare(
       password,
       usuario.password,
     );
 
     if (!coincide) {
+      usuario.intentosFallidos =
+        (usuario.intentosFallidos ?? 0) + 1;
+
+      if (
+        usuario.intentosFallidos
+        >= MAX_INTENTOS_FALLIDOS
+      ) {
+        usuario.bloqueadoHasta = new Date(
+          Date.now() + DURACION_BLOQUEO_MS,
+        );
+
+        await usuario.save();
+
+        return res.status(429).json({
+          mensaje:
+            "Cuenta bloqueada temporalmente "
+            + "por demasiados intentos fallidos. "
+            + "Intente nuevamente más tarde.",
+        });
+      }
+
+      await usuario.save();
+
       return res.status(401).json({
         mensaje: "Credenciales incorrectas.",
       });
+    }
+
+    if (
+      usuario.intentosFallidos > 0
+      || usuario.bloqueadoHasta
+    ) {
+      usuario.intentosFallidos = 0;
+      usuario.bloqueadoHasta = null;
+
+      await usuario.save();
     }
 
     const jwtSecret = process.env.JWT_SECRET;

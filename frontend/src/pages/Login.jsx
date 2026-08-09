@@ -25,9 +25,21 @@ function Login() {
       login(data.usuario, data.token);
       navigate("/");
 
-    } catch {
-      setError("Correo o contraseña incorrectos");
-    }
+    } catch (error) {
+  if (error.response?.status === 429) {
+    setError(
+      error.response?.data?.mensaje
+        ?? "Cuenta bloqueada temporalmente. "
+        + "Intente nuevamente más tarde.",
+    );
+
+    return;
+  }
+
+  setError(
+    "Correo o contraseña incorrectos.",
+  );
+}
   };
 
   return (

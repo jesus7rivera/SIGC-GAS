@@ -8,11 +8,12 @@
   "test": "npm run test:ci",
   "test:login-correcto": "node login/loginCorrecto.test.js",
   "test:login-incorrecto": "node login/loginIncorrecto.test.js",
+  "test:bloqueo-login": "node login/bloqueoLogin.test.js",
   "test:seguridad-operador": "node seguridad/operadorNoAccedeClientes.test.js",
   "test:cliente-crud": "node clientes/clienteCRUD.test.js",
   "test:movimiento-estado": "node movimientos/movimientoEstado.test.js",
   "test:ciclo-mantenimiento": "node movimientos/cicloMantenimiento.test.js",
-  "test:ci": "npm run test:login-correcto && npm run test:login-incorrecto && npm run test:seguridad-operador && npm run test:cliente-crud && npm run test:movimiento-estado && npm run test:ciclo-mantenimiento"
+  "test:ci": "npm run test:login-correcto && npm run test:login-incorrecto && npm run test:seguridad-operador && npm run test:cliente-crud && npm run test:movimiento-estado && npm run test:ciclo-mantenimiento && npm run test:bloqueo-login"
 },
   "keywords": [],
   "author": "",

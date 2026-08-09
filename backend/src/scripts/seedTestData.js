@@ -33,6 +33,11 @@ const prepararDatosPrueba = async () => {
       10,
     );
 
+    const passwordBloqueo = await bcrypt.hash(
+  "bloqueo123",
+  10,
+);
+
     await Usuario.findOneAndUpdate(
       {
         correo: "admin@sigcgas.com",
@@ -43,6 +48,8 @@ const prepararDatosPrueba = async () => {
         password: passwordAdministrador,
         rol: "Administrador",
         estado: true,
+        intentosFallidos: 0,
+        bloqueadoHasta: null,
       },
       {
         upsert: true,
@@ -61,6 +68,8 @@ const prepararDatosPrueba = async () => {
         password: passwordOperador,
         rol: "Operador",
         estado: true,
+        intentosFallidos: 0,
+        bloqueadoHasta: null,
       },
       {
         upsert: true,
@@ -68,6 +77,26 @@ const prepararDatosPrueba = async () => {
         setDefaultsOnInsert: true,
       },
     );
+
+    await Usuario.findOneAndUpdate(
+  {
+    correo: "bloqueo.selenium@sigcgas.test",
+  },
+  {
+    nombre: "Usuario Bloqueo Selenium",
+    correo: "bloqueo.selenium@sigcgas.test",
+    password: passwordBloqueo,
+    rol: "Operador",
+    estado: true,
+    intentosFallidos: 0,
+    bloqueadoHasta: null,
+  },
+  {
+    upsert: true,
+    returnDocument: "after",
+    setDefaultsOnInsert: true,
+  },
+);
 
     await Cliente.findOneAndUpdate(
       {
@@ -89,6 +118,7 @@ const prepararDatosPrueba = async () => {
     console.log("Datos de prueba preparados correctamente.");
     console.log("- Usuario Administrador");
     console.log("- Usuario Operador");
+    console.log("- Usuario Bloqueo Selenium");
     console.log("- Cliente Selenium");
   } finally {
     await mongoose.disconnect();
