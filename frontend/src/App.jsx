@@ -32,6 +32,9 @@ import Login
 import Movimientos
   from "./pages/Movimientos";
 
+import Usuarios
+  from "./pages/Usuarios";
+
 function App() {
   return (
     <AuthProvider>
@@ -67,6 +70,18 @@ function App() {
                 </RoleRoute>
               }
             />
+            <Route
+  path="usuarios"
+  element={
+    <RoleRoute
+      rolesPermitidos={[
+        "Administrador",
+      ]}
+    >
+      <Usuarios />
+    </RoleRoute>
+  }
+/>
 
             <Route
               path="cilindros"

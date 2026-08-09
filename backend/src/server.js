@@ -33,6 +33,9 @@ import {
   manejarRutaNoEncontrada,
 } from "./middleware/errorMiddleware.js";
 
+import usuarioRoutes
+from "./routes/usuarioRoutes.js";
+
 dotenv.config();
 
 conectarDB();
@@ -54,6 +57,10 @@ app.get(
 app.use(
   "/api/auth",
   authRoutes,
+);
+app.use(
+  "/api/usuarios",
+  usuarioRoutes,
 );
 
 app.use(

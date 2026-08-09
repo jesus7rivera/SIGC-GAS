@@ -13,7 +13,8 @@
   "test:cliente-crud": "node clientes/clienteCRUD.test.js",
   "test:movimiento-estado": "node movimientos/movimientoEstado.test.js",
   "test:ciclo-mantenimiento": "node movimientos/cicloMantenimiento.test.js",
-  "test:ci": "npm run test:login-correcto && npm run test:login-incorrecto && npm run test:seguridad-operador && npm run test:cliente-crud && npm run test:movimiento-estado && npm run test:ciclo-mantenimiento && npm run test:bloqueo-login"
+  "test:gestion-usuarios": "node usuarios/gestionUsuarios.test.js",
+  "test:ci": "npm run test:login-correcto && npm run test:login-incorrecto && npm run test:seguridad-operador && npm run test:cliente-crud && npm run test:movimiento-estado && npm run test:ciclo-mantenimiento && npm run test:bloqueo-login && npm run test:gestion-usuarios"
 },
   "keywords": [],
   "author": "",
