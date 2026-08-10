@@ -399,7 +399,7 @@ export const validarUsuario = (
   }
 
   const formatoCorreo =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  /^[^\s@]+@[^.\s@]+(?:\.[^.\s@]+)+$/;
 
   if (
     correo.length > 150 ||
@@ -493,7 +493,7 @@ export const validarLogin = (
       : "";
 
   const formatoCorreo =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  /^[^\s@]+@[^.\s@]+(?:\.[^.\s@]+)+$/;
 
   if (
     correo.length > 150 ||

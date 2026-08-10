@@ -4,8 +4,9 @@ export const manejarErrores = (
   res,
   next,
 ) => {
-  void req;
-  void next;
+  if (res.headersSent) {
+  return next(error);
+}
 
   const esJsonInvalido =
     error instanceof SyntaxError &&
@@ -44,7 +45,10 @@ export const manejarErrores = (
     });
   }
 
-  console.error("Error interno del servidor:", error);
+  console.error(
+  `Error interno del servidor en ${req.method} ${req.originalUrl}:`,
+  error,
+);
 
   return res.status(500).json({
     mensaje: "Error interno del servidor.",

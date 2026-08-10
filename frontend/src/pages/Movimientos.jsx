@@ -123,6 +123,7 @@ doc.setTextColor(32, 34, 38);
 
         <div className="header-buttons">
           <button
+            type="button"
             className="btn-primary"
             onClick={() => setMostrarModal(true)}
           >
@@ -130,6 +131,7 @@ doc.setTextColor(32, 34, 38);
           </button>
 
           <button
+            type="button"
             className="btn-secondary"
             onClick={generarReportePDF}
           >

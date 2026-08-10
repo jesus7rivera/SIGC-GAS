@@ -113,11 +113,12 @@ function ModalRestablecerPassword({
           }
         >
           <div className="form-group">
-            <label>
+            <label htmlFor="usuario-nueva-password">
               Nueva contraseña
             </label>
 
             <input
+              id="usuario-nueva-password"
               type="password"
               value={nuevaPassword}
               onChange={(event) =>
@@ -132,11 +133,12 @@ function ModalRestablecerPassword({
           </div>
 
           <div className="form-group">
-            <label>
+            <label htmlFor="usuario-confirmar-password">
               Confirmar contraseña
             </label>
 
             <input
+              id="usuario-confirmar-password"
               type="password"
               value={
                 confirmarPassword

@@ -44,7 +44,7 @@ export const validarMensajeChatbot = (
           !camposPermitidos
             .includes(campo),
       )
-      .sort();
+      .sort((a, b) => a.localeCompare(b));
 
   if (
     camposAdicionales.length > 0

@@ -43,6 +43,7 @@ function ModalHistorial({ historial, onClose }) {
 
         <div className="form-buttons">
           <button
+            type="button"
             className="btn-primary"
             onClick={onClose}
           >

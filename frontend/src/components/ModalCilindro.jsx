@@ -49,9 +49,10 @@ function ModalCilindro({ onClose, onGuardar, cilindroEditar }) {
 
         <form onSubmit={manejarGuardar}>
           <div className="form-group">
-            <label>Código</label>
+            <label htmlFor="cilindroCodigo">Código</label>
             <input
               type="text"
+              id="cilindroCodigo"
               placeholder="Ejemplo: CIL-003"
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
@@ -59,8 +60,10 @@ function ModalCilindro({ onClose, onGuardar, cilindroEditar }) {
           </div>
 
           <div className="form-group">
-            <label>Tipo</label>
-            <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
+            <label htmlFor="cilindro-tipo">Tipo</label>
+            <select id="cilindro-tipo"
+            value={tipo}
+            onChange={(e) => setTipo(e.target.value)}>
               <option>Doméstico</option>
               <option>Industrial</option>
               <option>Comercial</option>
@@ -68,8 +71,9 @@ function ModalCilindro({ onClose, onGuardar, cilindroEditar }) {
           </div>
 
           <div className="form-group">
-            <label>Capacidad</label>
+            <label htmlFor="cilindro-capacidad">Capacidad</label>
             <select
+              id="cilindro-capacidad"
               value={capacidad}
               onChange={(e) => setCapacidad(e.target.value)}
             >
@@ -80,8 +84,12 @@ function ModalCilindro({ onClose, onGuardar, cilindroEditar }) {
           </div>
 
           <div className="form-group">
-            <label>Estado</label>
-            <select value={estado} onChange={(e) => setEstado(e.target.value)}>
+            <label htmlFor="cilindro-estado">Estado</label>
+            <select
+              id="cilindro-estado"
+              value={estado}
+              onChange={(e) => setEstado(e.target.value)}
+            >
               <option>Disponible</option>
               <option>Prestado</option>
               <option>Mantenimiento</option>
