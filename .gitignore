@@ -32,3 +32,12 @@ __pycache__/
 *.py[cod]
 chatbot/models/
 chatbot/.rasa/
+
+# Resultados generados por Apache JMeter
+pruebas-jmeter/resultados/
+
+# Cobertura de pruebas
+backend/coverage/
+
+# Archivos temporales de SonarQube
+.scannerwork/

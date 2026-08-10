@@ -49,8 +49,9 @@ function ModalCliente({ onClose, onGuardar, clienteEditar }) {
 
         <form onSubmit={manejarGuardar}>
           <div className="form-group">
-            <label>DNI</label>
+            <label htmlFor="cliente-dni">DNI</label>
             <input
+              id="cliente-dni"
               type="text"
               value={dni}
               onChange={(e) => setDni(e.target.value)}
@@ -58,8 +59,9 @@ function ModalCliente({ onClose, onGuardar, clienteEditar }) {
           </div>
 
           <div className="form-group">
-            <label>Nombre Completo</label>
+            <label htmlFor="cliente-nombre">Nombre Completo</label>
             <input
+              id="cliente-nombre"
               type="text"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
@@ -67,8 +69,9 @@ function ModalCliente({ onClose, onGuardar, clienteEditar }) {
           </div>
 
           <div className="form-group">
-            <label>Teléfono</label>
+            <label htmlFor="cliente-telefono">Teléfono</label>
             <input
+              id="cliente-telefono"
               type="text"
               value={telefono}
               onChange={(e) => setTelefono(e.target.value)}

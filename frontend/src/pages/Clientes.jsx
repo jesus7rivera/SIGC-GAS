@@ -149,6 +149,7 @@ const columnas = [
 
         <div className="header-buttons">
   <button
+    type="button"
     className="btn-primary"
     onClick={() => setMostrarModal(true)}
   >
@@ -156,6 +157,7 @@ const columnas = [
   </button>
 
   <button
+    type="button"
     className="btn-secondary"
     onClick={generarReportePDF}
   >
@@ -194,12 +196,14 @@ const columnas = [
                 <td>{cliente.estado}</td>
                 <td>
                   <button
+                    type="button"
                     className="btn-secondary"
                     onClick={() => manejarEditar(cliente)}
                 >
                     Editar
                   </button>
                   <button
+                    type="button"
                     className="btn-danger"
                     onClick={() => manejarEliminar(cliente._id)}
                   >

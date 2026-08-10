@@ -37,9 +37,7 @@ const crearMensaje = (
   contenido,
   adicionales = {},
 ) => ({
-  id:
-    `${Date.now()}-`
-    + `${Math.random().toString(16).slice(2)}`,
+  id: crypto.randomUUID(),
   autor,
   contenido,
   hora: new Date().toLocaleTimeString(

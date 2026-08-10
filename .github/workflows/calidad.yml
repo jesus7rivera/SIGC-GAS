@@ -152,6 +152,8 @@ jobs:
           done
           echo "Ejecutando pruebas de seguridad de la API."
           npm --prefix backend run test:security-api
+          echo "Ejecutando pruebas de gestion segura de usuarios."
+          npm --prefix backend run test:usuarios-seguridad-api
 
           echo "Ejecutando pruebas de validacion de la API."
           npm --prefix backend run test:validation-api
@@ -189,3 +191,49 @@ jobs:
             frontend.log
           if-no-files-found: warn
           retention-days: 14
+
+  sonarqube:
+    name: Analizar con SonarQube
+    runs-on: [self-hosted, windows, x64]
+    needs:
+      - frontend
+      - backend
+      - selenium
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependencias del backend
+        run: npm --prefix backend ci
+
+      - name: Generar cobertura LCOV
+        shell: powershell
+        working-directory: backend
+        run: |
+          New-Item -ItemType Directory -Force coverage | Out-Null
+
+          node --test `
+            --experimental-test-coverage `
+            --test-coverage-include="src/**/*.js" `
+            --test-coverage-exclude="src/scripts/**" `
+            --test-reporter=spec `
+            --test-reporter-destination=stdout `
+            --test-reporter=lcov `
+            --test-reporter-destination=coverage/lcov.info
+
+      - name: Ejecutar analisis SonarQube
+        shell: powershell
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+        run: npx --yes @sonar/scan

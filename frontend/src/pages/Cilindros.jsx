@@ -179,6 +179,7 @@ const verHistorial = async (cilindroId) => {
 
         <div className="header-buttons">
   <button
+    type="button"
     className="btn-primary"
     onClick={() => setMostrarModal(true)}
   >
@@ -186,6 +187,7 @@ const verHistorial = async (cilindroId) => {
   </button>
 
   <button
+    type="button"
     className="btn-secondary"
     onClick={generarReportePDF}
   >
@@ -195,10 +197,10 @@ const verHistorial = async (cilindroId) => {
       </div>
 
       <div className="filter-container">
-        <button onClick={() => setFiltroEstado("Todos")}>Todos</button>
-        <button onClick={() => setFiltroEstado("Disponible")}>Disponibles</button>
-        <button onClick={() => setFiltroEstado("Prestado")}>Prestados</button>
-        <button onClick={() => setFiltroEstado("Mantenimiento")}>Mantenimiento</button>
+        <button type="button" onClick={() => setFiltroEstado("Todos")}>Todos</button>
+        <button type="button" onClick={() => setFiltroEstado("Disponible")}>Disponibles</button>
+        <button type="button" onClick={() => setFiltroEstado("Prestado")}>Prestados</button>
+        <button type="button" onClick={() => setFiltroEstado("Mantenimiento")}>Mantenimiento</button>
       </div>
 
       <div className="search-container">
@@ -235,12 +237,14 @@ const verHistorial = async (cilindroId) => {
 </td>
   <td>
    <button
+   type="button"
   className="btn-secondary"
   onClick={() => manejarEditar(cilindro)}
 >
   Editar
 </button> 
   <button
+    type="button"
     className="btn-secondary"
     onClick={() => verHistorial(cilindro._id)}
   >
@@ -248,6 +252,7 @@ const verHistorial = async (cilindroId) => {
   </button>
 
   <button
+    type="button"
     className="btn-danger"
     style={{ marginLeft: "8px" }}
     onClick={() => manejarEliminar(cilindro._id)}

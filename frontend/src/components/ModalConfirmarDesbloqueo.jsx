@@ -33,12 +33,12 @@ function ModalConfirmarDesbloqueo({
         </h2>
 
         <p>
-          ¿Desea desbloquear la cuenta de{" "}
-          <strong>
-            {usuario.nombre}
-          </strong>
-          ?
-        </p>
+  ¿Desea desbloquear la cuenta de{" "}
+  <strong>
+    {usuario.nombre}
+  </strong>
+  {"?"}
+</p>
 
         <div className="form-buttons">
           <button
