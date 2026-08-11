@@ -27,7 +27,7 @@ y pruebas manuales.
 | Unitarias | Node Test Runner | Implementadas |
 | Integración | Scripts API + MongoDB de pruebas | Implementadas |
 | Sistema | Selenium WebDriver | Implementadas |
-| Aceptación | Pruebas manuales basadas en escenarios | Pendiente de formalización |
+| Aceptación | Pruebas manuales basadas en escenarios | Ejecutadas y formalizadas |
 
 Las pruebas automatizadas se ejecutan sobre un entorno de pruebas
 independiente utilizando la base:
@@ -283,7 +283,7 @@ El sistema permite el ingreso y muestra el Dashboard.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -306,7 +306,7 @@ directamente al módulo.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -328,7 +328,7 @@ El cliente es almacenado y aparece en la tabla de resultados.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -353,7 +353,7 @@ Después de la devolución aparece Disponible.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -377,7 +377,7 @@ Disponible.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -398,7 +398,7 @@ La cuenta queda temporalmente bloqueada después del quinto intento.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -423,7 +423,7 @@ nueva contraseña.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -452,7 +452,7 @@ relacionada con los datos registrados en el sistema.
 
 Estado:
 
-Pendiente de ejecución formal.
+APROBADO.
 
 ---
 
@@ -484,7 +484,7 @@ Las pruebas también proporcionan evidencia para diferentes RNF.
 | ESLint | RNF-MAN-01 |
 | Pruebas de aceptación | RNF de Usabilidad y Confiabilidad |
 
-Las pruebas JMeter y SonarQube serán incorporadas posteriormente.
+Las pruebas de rendimiento con JMeter y el análisis estático con SonarQube ya fueron incorporados y documentados como parte de la evaluación de calidad del sistema.
 
 ---
 
@@ -495,10 +495,9 @@ Actualmente SIGC-GAS cuenta con:
 - Pruebas unitarias automatizadas.
 - Pruebas de integración automatizadas.
 - 8 casos Selenium de sistema.
-- Pruebas de aceptación definidas.
+- Pruebas de aceptación ejecutadas y formalizadas (PA-01 a PA-08).
 
-Las pruebas de aceptación todavía deben ser ejecutadas formalmente
-y documentadas mediante evidencias.
+Las pruebas de aceptación PA-01 a PA-08 fueron ejecutadas formalmente y documentadas mediante evidencias en la Fase 09.
 
 ---
 

@@ -12,7 +12,7 @@ Para cada requisito se establece:
 - Métrica.
 - Criterio de aceptación.
 - Método de verificación.
-- Estado inicial.
+- Estado de evaluación.
 
 Se han definido 24 requisitos no funcionales distribuidos entre
 Seguridad, Rendimiento, Usabilidad, Disponibilidad, Escalabilidad
@@ -54,8 +54,8 @@ Durante el build del frontend se ha detectado una advertencia de
 Vite debido a archivos JavaScript superiores a 500 kB.
 
 El bundle principal supera actualmente 1 MB antes de compresión,
-por lo que se considera un hallazgo de rendimiento que será
-analizado posteriormente.
+por lo que se conserva como un hallazgo de rendimiento
+registrado y priorizado en el plan de mejora.
 
 ---
 
@@ -82,9 +82,9 @@ operativas mediante lenguaje natural.
 
 | ID | Requisito | Métrica | Criterio de aceptación | Verificación | Estado |
 |---|---|---|---|---|---|
-| RNF-DIS-01 | Durante una prueba continua del sistema, la API deberá permanecer disponible. | Disponibilidad durante prueba | >= 99 % durante una ventana de prueba de 60 minutos | JMeter / monitoreo | Pendiente |
-| RNF-DIS-02 | El servidor deberá responder correctamente a solicitudes válidas mientras MongoDB se encuentre disponible. | Solicitudes exitosas | >= 95 % de respuestas exitosas durante la prueba definida | JMeter | Pendiente |
-| RNF-DIS-03 | Un error controlado en una solicitud no deberá detener completamente el servidor. | Continuidad del servicio | El servidor continúa atendiendo solicitudes posteriores al error | Prueba de integración/API | Pendiente |
+| RNF-DIS-01 | Durante una prueba continua del sistema, la API deberá permanecer disponible. | Disponibilidad durante prueba | >= 99 % durante una ventana de prueba de 60 minutos | JMeter / monitoreo | No medido formalmente |
+| RNF-DIS-02 | El servidor deberá responder correctamente a solicitudes válidas mientras MongoDB se encuentre disponible. | Solicitudes exitosas | >= 95 % de respuestas exitosas durante la prueba definida | JMeter | CUMPLE |
+| RNF-DIS-03 | Un error controlado en una solicitud no deberá detener completamente el servidor. | Continuidad del servicio | El servidor continúa atendiendo solicitudes posteriores al error | Prueba de integración/API | CUMPLE |
 | RNF-DIS-04 | El pipeline de calidad deberá poder ejecutarse nuevamente después de un fallo de una prueba sin requerir reconstrucción manual del proyecto. | Reejecución del pipeline | Pipeline reproducible mediante GitHub Actions | GitHub Actions | Cumple parcialmente |
 
 ## Observación
@@ -105,7 +105,7 @@ evaluación dentro del entorno del proyecto.
 |---|---|---|---|---|---|
 | RNF-ESC-01 | La API deberá atender múltiples usuarios concurrentes sin pérdida crítica de servicio. | Usuarios concurrentes | 20 usuarios concurrentes con menos del 5 % de errores | JMeter | Cumple |
 | RNF-ESC-02 | Al incrementar la carga de 10 a 20 usuarios concurrentes, el sistema deberá mantener tiempos de respuesta aceptables. | Variación de tiempo | p95 <= 3 segundos con 20 usuarios | JMeter | Cumple |
-| RNF-ESC-03 | Las consultas principales deberán continuar funcionando al incrementarse el volumen de registros de prueba. | Tiempo de consulta | Consultas principales <= 3 segundos con un conjunto ampliado de datos | JMeter / pruebas API | Pendiente |
+| RNF-ESC-03 | Las consultas principales deberán continuar funcionando al incrementarse el volumen de registros de prueba. | Tiempo de consulta | Consultas principales <= 3 segundos con un conjunto ampliado de datos | JMeter / pruebas API | No medido formalmente |
 | RNF-ESC-04 | La arquitectura deberá permitir agregar nuevos módulos sin modificar directamente los módulos de negocio existentes. | Acoplamiento estructural | Nuevas funcionalidades integradas mediante rutas, controladores y servicios independientes | Revisión de arquitectura | Cumple parcialmente |
 
 ## Justificación
@@ -113,8 +113,8 @@ evaluación dentro del entorno del proyecto.
 La separación del frontend, backend, rutas, controladores,
 servicios y modelos facilita la ampliación del proyecto.
 
-Sin embargo, la capacidad real bajo incremento de carga deberá ser
-demostrada mediante pruebas.
+La capacidad bajo incremento de carga fue evaluada mediante JMeter;
+RNF-ESC-03 permanece no medido formalmente porque requiere un conjunto ampliado de datos.
 
 ---
 
@@ -125,7 +125,7 @@ demostrada mediante pruebas.
 | RNF-MAN-01 | El código deberá superar el análisis de ESLint antes de integrarse a main. | Errores ESLint | 0 errores | ESLint / GitHub Actions | Cumple |
 | RNF-MAN-02 | El código no deberá contener vulnerabilidades críticas o bloqueantes detectadas por el análisis estático definido para el proyecto. | Blocker: 0; High: 0 | 0 issues Blocker y 0 issues High | SonarQube | CUMPLE |
 | RNF-MAN-03 | El porcentaje de código duplicado deberá mantenerse dentro de un nivel controlado. | Duplicación global: 3.1 % | <= 5 % | SonarQube | CUMPLE |
-| RNF-MAN-04 | La deuda técnica deberá ser identificada y registrada para permitir su priorización. | Deuda técnica detectada | 100 % de los hallazgos relevantes documentados en el plan de mejora | SonarQube y documentación | Pendiente |
+| RNF-MAN-04 | La deuda técnica deberá ser identificada y registrada para permitir su priorización. | Deuda técnica detectada | 100 % de los hallazgos relevantes documentados en el plan de mejora | SonarQube y documentación | CUMPLE |
 
 ## Evidencias actuales
 
@@ -134,8 +134,8 @@ El proyecto ya utiliza:
 ESLint, Git, GitHub, ramas de trabajo, Pull Requests, GitHub
 Actions, pruebas API, pruebas unitarias y Selenium.
 
-SonarQube permitirá complementar esta evaluación con métricas de
-complejidad, duplicidad, code smells y deuda técnica.
+SonarQube complementó esta evaluación con métricas de
+complejidad, duplicación, incidencias y deuda técnica.
 
 ---
 
@@ -153,18 +153,18 @@ complejidad, duplicidad, code smells y deuda técnica.
 
 ---
 
-# 9. Estado inicial general
+# 9. Estado general de evaluación
 
 | Estado | Interpretación |
 |---|---|
 | Cumple | Existe evidencia suficiente actualmente |
 | Cumple parcialmente | Existe implementación, pero falta una validación completa |
-| Pendiente | Requiere medición o herramienta adicional |
+| No medido formalmente | No se obtuvo la medición específica requerida |
 
-Los requisitos marcados como Pendiente no representan
+Los requisitos marcados como No medido formalmente no representan
 necesariamente defectos.
 
-Indican que todavía no existe evidencia cuantitativa suficiente
+Indican que no se obtuvo evidencia cuantitativa suficiente
 para determinar su cumplimiento.
 
 ---
@@ -193,13 +193,13 @@ Los requisitos de Seguridad presentan actualmente el mayor nivel
 de evidencia debido a las pruebas de autenticación, autorización,
 bloqueo temporal y gestión de usuarios.
 
-Los requisitos de Rendimiento, Disponibilidad y Escalabilidad
-requieren principalmente las pruebas de carga que serán realizadas
-con JMeter.
+Los requisitos de Rendimiento y Escalabilidad cuentan con evidencia
+obtenida mediante las pruebas de carga realizadas con JMeter. En
+Disponibilidad queda sin medición formal únicamente para la prueba continua específica de RNF-DIS-01.
 
-Los requisitos de Mantenibilidad serán complementados mediante
-SonarQube y las métricas de calidad del código.
+Los requisitos de Mantenibilidad fueron evaluados mediante
+SonarQube, ESLint, GitHub Actions y las métricas de calidad del código.
 
-Esta matriz permitirá determinar posteriormente cuáles requisitos
-cumplen, cuáles requieren mejoras y cuáles representan deuda
-técnica o riesgos para el sistema.
+La matriz consolidada permite identificar cuáles requisitos
+cumplen, cuáles requieren mejoras y cuáles no fueron medidos
+formalmente, además de la deuda técnica y los riesgos residuales del sistema.

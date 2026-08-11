@@ -19,25 +19,25 @@ Los atributos evaluados son:
 - Portabilidad.
 - Confiabilidad.
 
-La evaluación inicial no implica que todos los atributos cumplan
-completamente los niveles esperados. Algunos requieren mediciones
-adicionales que serán realizadas en las siguientes fases mediante
-pruebas, métricas, SonarQube y JMeter.
+La evaluación consolidada no implica que todos los atributos cumplan
+completamente los niveles esperados. Algunas mediciones específicas
+permanecen no realizadas y se identifican explícitamente en las
+fases posteriores de evaluación.
 
 ---
 
 ## 2. Matriz general de atributos de calidad
 
-| Atributo | Aplicación en SIGC-GAS | Evidencia actual | Estado inicial |
+| Atributo | Aplicación en SIGC-GAS | Evidencia consolidada | Estado consolidado |
 |---|---|---|---|
 | Seguridad | Protege autenticación, autorización y contraseñas | JWT, bcrypt, roles, bloqueo temporal, gestión de usuarios, pruebas API y Selenium | Presente y probado |
-| Rendimiento | Busca mantener tiempos de respuesta adecuados | Aplicación funcional y build exitoso, pero existe advertencia por bundle superior a 500 kB | Requiere medición |
-| Usabilidad | Facilita la interacción con módulos y operaciones | Interfaz web, navegación lateral, chatbot, estados visuales, modales y mensajes | Presente |
-| Disponibilidad | El sistema debe encontrarse accesible cuando sea requerido | No existe todavía una medición formal de disponibilidad | Requiere evaluación |
-| Escalabilidad | Debe soportar crecimiento de usuarios, datos y operaciones | Arquitectura modular cliente-servidor, pero no existen pruebas de escalabilidad | Requiere evaluación |
-| Mantenibilidad | Facilita corrección, prueba y evolución del código | Separación por módulos, servicios, controladores, ESLint, pruebas automatizadas | Presente |
+| Rendimiento | Busca mantener tiempos de respuesta adecuados | Pruebas JMeter con 10 y 20 usuarios, 0 % de errores y p95 dentro de los límites definidos; permanece la advertencia del bundle de Vite | Medido y cumple |
+| Usabilidad | Facilita la interacción con módulos y operaciones | Interfaz web, navegación lateral, chatbot, estados visuales, Selenium y pruebas de aceptación | Presente y evaluado |
+| Disponibilidad | El sistema debe encontrarse accesible cuando sea requerido | Pruebas JMeter y API verifican continuidad en escenarios definidos; no se realizó la medición continua de 60 minutos | Evaluada parcialmente |
+| Escalabilidad | Debe soportar crecimiento de usuarios, datos y operaciones | JMeter verificó carga de hasta 20 usuarios concurrentes; no se evaluó un conjunto ampliado de datos | Evaluada parcialmente |
+| Mantenibilidad | Facilita corrección, prueba y evolución del código | SonarQube, ESLint, GitHub Actions, pruebas automatizadas y plan de mejora | Presente y medida |
 | Portabilidad | Permite ejecutar el sistema en diferentes entornos | Uso de Node.js, React, variables de entorno y MongoDB | Parcialmente presente |
-| Confiabilidad | Busca ejecutar las operaciones de forma consistente | Reglas de negocio, validaciones y pruebas automáticas | Presente y pendiente de ampliar |
+| Confiabilidad | Busca ejecutar las operaciones de forma consistente | Reglas de negocio, pruebas API, Selenium y pruebas de aceptación | Presente y probada |
 
 ---
 
@@ -80,7 +80,7 @@ Entre ellas:
 - Validación de permisos HTTP 401 y 403.
 - Validación del almacenamiento de contraseñas mediante bcrypt.
 
-## 3.4 Estado inicial
+## 3.4 Estado consolidado
 
 Presente y probado.
 
@@ -115,21 +115,21 @@ Estos elementos no constituyen por sí mismos un fallo funcional,
 pero representan posibles oportunidades de optimización del
 rendimiento del frontend.
 
-## 4.4 Evaluaciones pendientes
+## 4.4 Evaluación realizada
 
-Se deberán medir posteriormente:
+Las pruebas de carga ejecutadas con JMeter permitieron medir:
 
-- Tiempo de respuesta de endpoints.
-- Comportamiento bajo carga concurrente.
-- Tiempo de respuesta del sistema.
-- Uso de recursos.
-- Capacidad bajo diferentes cantidades de solicitudes.
+- 10 usuarios concurrentes: 400 solicitudes, 0 % de errores y p95 de 389.60 ms.
+- 20 usuarios concurrentes: 800 solicitudes, 0 % de errores y p95 de 732 ms.
+- Operaciones de registro con 20 usuarios: 1200 solicitudes, 0 % de errores y p95 de 477.95 ms.
+- Los criterios definidos para RNF-REN-01 a RNF-REN-04 fueron cumplidos.
+- La optimización del bundle de Vite permanece como oportunidad de mejora.
 
-Estas mediciones se realizarán principalmente mediante JMeter.
+Las mediciones fueron realizadas mediante JMeter y documentadas como evidencia de rendimiento.
 
-## 4.5 Estado inicial
+## 4.5 Estado consolidado
 
-Requiere medición.
+Medido y cumple en los escenarios de carga definidos.
 
 ---
 
@@ -169,12 +169,12 @@ Permite consultar información como:
 - Clientes sin actividad.
 - Resumen de riesgos operativos.
 
-## 5.4 Estado inicial
+## 5.4 Estado consolidado
 
-Presente.
+Presente y evaluada.
 
-La usabilidad deberá complementarse posteriormente con criterios
-medibles dentro de los requisitos no funcionales.
+La usabilidad fue complementada mediante criterios medibles
+dentro de los requisitos no funcionales, Selenium y pruebas de aceptación.
 
 ---
 
@@ -196,13 +196,13 @@ disponibilidad del sistema.
 Tampoco se ha documentado todavía infraestructura de alta
 disponibilidad, redundancia o recuperación automática ante fallos.
 
-## 6.3 Estado inicial
+## 6.3 Estado consolidado
 
-Requiere evaluación.
+Evaluada parcialmente.
 
-No se debe afirmar todavía un porcentaje de disponibilidad sin
-haber realizado una medición o definido una infraestructura que lo
-garantice.
+No se afirma un porcentaje global de disponibilidad porque
+RNF-DIS-01 no fue medido durante una ventana continua de 60 minutos ni
+existe infraestructura de alta disponibilidad que lo garantice.
 
 ---
 
@@ -228,13 +228,13 @@ SIGC-GAS posee una arquitectura modular que separa:
 
 Esta separación favorece futuras ampliaciones.
 
-Sin embargo, todavía no existen pruebas que permitan determinar el
-comportamiento del sistema ante grandes volúmenes de solicitudes o
-usuarios concurrentes.
+Las pruebas de carga con JMeter demostraron funcionamiento con
+hasta 20 usuarios concurrentes y tiempos p95 dentro de los
+umbrales definidos; RNF-ESC-03 no fue medido con un conjunto ampliado de datos.
 
-## 7.3 Estado inicial
+## 7.3 Estado consolidado
 
-Requiere evaluación mediante pruebas de carga.
+Evaluada parcialmente mediante pruebas de carga.
 
 ---
 
@@ -265,19 +265,19 @@ El proyecto presenta:
 - Pruebas Selenium.
 - Pruebas unitarias del chatbot.
 
-## 8.3 Evaluaciones pendientes
+## 8.3 Evaluación cuantitativa
 
-SonarQube permitirá posteriormente medir:
+SonarQube obtuvo Quality Gate PASSED y permitió medir:
 
-- Code Smells.
-- Complejidad.
-- Código duplicado.
-- Deuda técnica.
-- Mantenibilidad.
+- Maintainability Rating A con 24 incidencias residuales.
+- Complejidad ciclomática global: 793.
+- Complejidad cognitiva global: 390.
+- Código duplicado: 3.1 %.
+- Deuda técnica: 1 h 49 min; Debt Ratio: 0.0 %.
 
-## 8.4 Estado inicial
+## 8.4 Estado consolidado
 
-Presente, pendiente de medición cuantitativa.
+Presente y medida mediante análisis estático.
 
 ---
 
@@ -313,7 +313,7 @@ VITE_API_URL.
 No se ha realizado todavía una evaluación formal en diferentes
 sistemas operativos o ambientes de despliegue.
 
-## 9.4 Estado inicial
+## 9.4 Estado consolidado
 
 Parcialmente presente.
 
@@ -345,18 +345,18 @@ Actualmente existen pruebas automatizadas relacionadas con:
 Entre las reglas verificadas se encuentra el cambio correcto del
 estado de un cilindro cuando se registra un movimiento.
 
-## 10.3 Estado inicial
+## 10.3 Estado consolidado
 
-Presente y probado en los escenarios automatizados existentes.
+Presente y probada mediante escenarios automatizados y de aceptación.
 
-Será necesario ampliar la evaluación mediante métricas de defectos
-y resultados de pruebas.
+La evidencia obtenida permite confirmar la consistencia del sistema
+en los escenarios cubiertos; no se establece una métrica de confiabilidad en producción.
 
 ---
 
-# 11. Relación preliminar entre atributos y RNF
+# 11. Relación entre atributos y criterios de calidad
 
-| Atributo | Ejemplo de RNF que deberá definirse |
+| Atributo | Ejemplo de criterio relacionado |
 |---|---|
 | Seguridad | Bloquear una cuenta después de cinco intentos fallidos |
 | Rendimiento | Responder una consulta dentro de un tiempo máximo establecido |
@@ -367,7 +367,7 @@ y resultados de pruebas.
 | Portabilidad | Permitir configurar servicios mediante variables de entorno |
 | Confiabilidad | Mantener consistencia del estado del cilindro ante movimientos válidos |
 
-Los valores medibles definitivos serán establecidos en la Fase 3.
+Los requisitos no funcionales medibles priorizados fueron establecidos en la Fase 3.
 
 ---
 
@@ -377,13 +377,13 @@ SIGC-GAS presenta actualmente fortalezas principalmente en los
 atributos de Seguridad, Mantenibilidad, Usabilidad y Confiabilidad,
 debido a los controles, estructura modular y pruebas existentes.
 
-Los atributos de Rendimiento, Disponibilidad y Escalabilidad
-requieren mediciones adicionales antes de determinar su grado de
-cumplimiento.
+Los atributos de Rendimiento y Escalabilidad fueron evaluados
+mediante JMeter y cumplieron los criterios definidos en los
+escenarios medidos; Disponibilidad conserva RNF-DIS-01 sin medición formal.
 
 La Portabilidad se encuentra parcialmente respaldada por el uso de
 tecnologías multiplataforma y variables de entorno, pero todavía
 requiere validación formal.
 
-El resultado de esta fase servirá como base para redactar los
-requisitos no funcionales medibles de la Fase 3.
+El resultado de esta fase se consolidó con los requisitos no
+funcionales medibles priorizados y evaluados en la Fase 3.
