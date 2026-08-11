@@ -200,7 +200,14 @@ Se buscará obtener como mínimo:
 
 ### Resultado
 
-Pendiente.
+Cobertura global: 70.7 %.
+Line Coverage: 69.8 %.
+Condition Coverage: 81.7 %.
+Cobertura de código nuevo: 97.2 %.
+New Code Line Coverage: 97.4 %.
+New Code Condition Coverage: 95.7 %.
+
+El código nuevo supera el umbral mínimo de 80 % establecido por el Quality Gate.
 
 ---
 
@@ -221,7 +228,7 @@ componentes con mayor lógica del frontend.
 
 ### Resultado
 
-Pendiente.
+SonarQube registró una complejidad ciclomática global de 793 y una complejidad cognitiva de 390.
 
 ---
 
@@ -249,7 +256,8 @@ Se prestará especial atención a:
 
 ### Resultado
 
-Pendiente de análisis mediante herramienta.
+Complejidad ciclomática global: 793.
+Complejidad cognitiva global: 390.
 
 ---
 
@@ -280,7 +288,9 @@ SonarQube.
 
 ### Resultado
 
-Pendiente.
+Duplicación global: 3.1 %.
+
+El resultado cumple RNF-MAN-03, cuyo límite definido es <= 5 %.
 
 ---
 
@@ -309,7 +319,9 @@ medición.
 
 ### Resultado
 
-Pendiente.
+No calculado.
+
+SonarQube obtuvo Maintainability Rating A, pero esta calificación no equivale al Maintainability Index clásico; por ello no se asigna un valor estimado.
 
 ---
 
@@ -359,11 +371,16 @@ Pendiente de consolidación.
 | Build frontend | Exitoso | Vite |
 | Bundle JS principal | Aproximadamente 1.18 MB antes de gzip | Vite build |
 | Logo CORSURSA | Aproximadamente 2.18 MB | Vite build |
-| Cobertura de código | Pendiente | Herramienta por ejecutar |
-| Complejidad ciclomática | Pendiente | SonarQube |
-| Código duplicado | Pendiente | SonarQube |
-| Maintainability Index | Pendiente | Herramienta por definir |
-| Deuda técnica | Pendiente | SonarQube |
+| Cobertura de código | 70.7 % global; 97.2 % código nuevo | SonarQube |
+| Complejidad ciclomática | 793 | SonarQube |
+| Código duplicado | 3.1 % | SonarQube |
+| Maintainability Index | No calculado | No medido |
+| Deuda técnica | 1 h 49 min; Debt Ratio 0.0 % | SonarQube |
+| Complejidad cognitiva | 390 | SonarQube |
+| Quality Gate | PASSED | SonarQube |
+| Maintainability Rating | A; 24 incidencias residuales | SonarQube |
+| Security Rating | A; 0 incidencias | SonarQube |
+| Reliability Rating | A; 0 incidencias | SonarQube |
 
 
 ## 11.1 Resultados de pruebas de carga con JMeter
@@ -523,9 +540,9 @@ La metodología de medición ha sido definida.
 Actualmente existen resultados parciales derivados de ESLint,
 Selenium, pruebas API y build del frontend.
 
-Las métricas cuantitativas relacionadas con SonarQube, JMeter,
-cobertura y Maintainability Index permanecen pendientes hasta la
-ejecución de las herramientas correspondientes.
+Las métricas cuantitativas de SonarQube y JMeter ya fueron obtenidas y
+consolidadas. La única métrica prevista en esta fase que no fue
+calculada es el Maintainability Index clásico.
 
 ---
 
@@ -534,10 +551,10 @@ ejecución de las herramientas correspondientes.
 La definición de métricas permite transformar la evaluación de
 SIGC-GAS en un proceso cuantificable.
 
-La auditoría no se limitará a determinar si el sistema funciona,
-sino que evaluará su calidad mediante defectos, cobertura,
+La auditoría no se limitó a determinar si el sistema funciona,
+sino que evaluó su calidad mediante defectos, cobertura,
 complejidad, duplicidad, mantenibilidad, rendimiento y
 productividad.
 
-Los resultados obtenidos posteriormente serán comparados con los
-requisitos no funcionales definidos en la Fase 3.
+Los resultados obtenidos fueron comparados con los
+requisitos no funcionales definidos y evaluados en la Fase 3.
